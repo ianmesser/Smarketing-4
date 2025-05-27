@@ -1,10 +1,10 @@
-import React from 'react';
+import React from "react";
+import RetailerDashboard from "./RetailerDashboard";
 
 function App() {
   return (
-    <div className="p-6 font-sans text-gray-900">
-      <h1 className="text-2xl font-bold mb-4">Retail Ad Marketplace</h1>
-      <p>This is a starter React UI for your platform. Let's build something great.</p>
+    <div className="min-h-screen bg-white text-gray-900">
+      <RetailerDashboard />
     </div>
   );
 }
