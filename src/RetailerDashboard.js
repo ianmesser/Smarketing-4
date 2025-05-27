@@ -87,4 +87,57 @@ const RetailerDashboard = () => {
                 placeholder="e.g. June 9 – June 15"
                 value={newSlot.availability}
                 onChange={(e) =>
-                  setNewSlot({ ...newSlot, availa
+                  setNewSlot({ ...newSlot, availability: e.target.value })
+                }
+              />
+            </label>
+
+            <div className="flex justify-end space-x-3 mt-4">
+              <button
+                onClick={() => setShowModal(false)}
+                className="text-gray-600 hover:underline"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleAddSlot}
+                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+              >
+                Add Slot
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Table */}
+      <table className="w-full text-left border-collapse">
+        <thead>
+          <tr className="bg-gray-100">
+            <th className="p-3 border-b">Slot Name</th>
+            <th className="p-3 border-b">Price</th>
+            <th className="p-3 border-b">Period</th>
+            <th className="p-3 border-b">Availability</th>
+            <th className="p-3 border-b">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {adSlots.map((slot) => (
+            <tr key={slot.id} className="hover:bg-gray-50">
+              <td className="p-3 border-b">{slot.name}</td>
+              <td className="p-3 border-b">{slot.price}</td>
+              <td className="p-3 border-b">{slot.period}</td>
+              <td className="p-3 border-b">{slot.availability}</td>
+              <td className="p-3 border-b space-x-2">
+                <button className="text-blue-600 hover:underline">Edit</button>
+                <button className="text-red-500 hover:underline">Archive</button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
+export default RetailerDashboard;
