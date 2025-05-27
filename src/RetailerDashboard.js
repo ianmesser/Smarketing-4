@@ -250,61 +250,61 @@ const RetailerDashboard = () => {
                     </button>
                   </td>
                 </tr>
-                {publishingPlacementId === p.id && (
-  <tr>
-    <td colSpan="6" className="bg-gray-50 p-4">
-      <div className="flex flex-col gap-4">
-        <div className="flex items-center gap-4">
-          <label className="font-medium">Start Date:</label>
-          <input
-            type="date"
-            className="border p-2 rounded"
-            value={publishStartDate}
-            onChange={(e) => setPublishStartDate(e.target.value)}
-          />
-
-          <label className="font-medium">Weeks to Publish:</label>
-          <input
-            type="number"
-            min="1"
-            className="border p-2 rounded w-20"
-            value={publishWeeks}
-            onChange={(e) =>
-              setPublishWeeks(parseInt(e.target.value) || 1)
-            }
-          />
-
-          <button
-            className="bg-blue-600 text-white px-4 py-2 rounded"
-            onClick={() => {
-              if (!publishStartDate) {
-                alert("Please select a start date.");
-                return;
-              }
-              const cadence = {
-                startDate: publishStartDate,
-                periodLength: p.cadenceOverride.periodLength,
-                maxWeeksOut: publishWeeks,
-              };
-              const availability = generateAvailability(p, cadence);
-              setAvailabilities((prev) => [...prev, ...availability]);
-              setPublishingPlacementId(null);
-            }}
-          >
-            Confirm
-          </button>
-
-          <button
-            className="text-gray-500 underline"
-            onClick={() => setPublishingPlacementId(null)}
-          >
-            Cancel
-          </button>
-        </div>
-      </div>
-    </td>
-  </tr>
-)}
+              {publishingPlacementId === p.id && (
+                <tr>
+                  <td colSpan="6" className="bg-gray-50 p-4">
+                    <div className="flex flex-col gap-4">
+                      <div className="flex items-center gap-4">
+                        <label className="font-medium">Start Date:</label>
+                        <input
+                          type="date"
+                          className="border p-2 rounded"
+                          value={publishStartDate}
+                          onChange={(e) => setPublishStartDate(e.target.value)}
+                        />
+              
+                        <label className="font-medium">Weeks to Publish:</label>
+                        <input
+                          type="number"
+                          min="1"
+                          className="border p-2 rounded w-20"
+                          value={publishWeeks}
+                          onChange={(e) =>
+                            setPublishWeeks(parseInt(e.target.value) || 1)
+                          }
+                        />
+              
+                        <button
+                          className="bg-blue-600 text-white px-4 py-2 rounded"
+                          onClick={() => {
+                            if (!publishStartDate) {
+                              alert("Please select a start date.");
+                              return;
+                            }
+                            const cadence = {
+                              startDate: publishStartDate,
+                              periodLength: p.cadenceOverride.periodLength,
+                              maxWeeksOut: publishWeeks,
+                            };
+                            const availability = generateAvailability(p, cadence);
+                            setAvailabilities((prev) => [...prev, ...availability]);
+                            setPublishingPlacementId(null);
+                          }}
+                        >
+                          Confirm
+                        </button>
+              
+                        <button
+                          className="text-gray-500 underline"
+                          onClick={() => setPublishingPlacementId(null)}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              )}
 
               ))}
             </tbody>
