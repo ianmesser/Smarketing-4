@@ -164,17 +164,6 @@ const RetailerDashboard = () => {
             <h3 className="font-semibold mb-2">Cadence Settings</h3>
           </div>
           <div>
-            <label className="block font-medium mb-1">Start Date</label>
-            <input
-              className="border p-2 rounded w-full"
-              type="date"
-              value={newPlacement.cadenceStartDate}
-              onChange={(e) =>
-                setNewPlacement({ ...newPlacement, cadenceStartDate: e.target.value })
-              }
-            />
-          </div>
-          <div>
             <label className="block font-medium mb-1">Period Length (Days)</label>
             <input
               className="border p-2 rounded w-full"
@@ -185,21 +174,6 @@ const RetailerDashboard = () => {
                 setNewPlacement({
                   ...newPlacement,
                   cadencePeriodLength: parseInt(e.target.value) || 1,
-                })
-              }
-            />
-          </div>
-          <div>
-            <label className="block font-medium mb-1">Weeks to Publish</label>
-            <input
-              className="border p-2 rounded w-full"
-              type="number"
-              min="1"
-              value={newPlacement.cadenceWeeksOut}
-              onChange={(e) =>
-                setNewPlacement({
-                  ...newPlacement,
-                  cadenceWeeksOut: parseInt(e.target.value) || 1,
                 })
               }
             />
