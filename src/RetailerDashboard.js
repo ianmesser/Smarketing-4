@@ -250,6 +250,7 @@ const RetailerDashboard = () => {
                     </button>
                   </td>
                 </tr>
+                
                 {publishingPlacementId === p.id && (
                   <tr>
                     <td colSpan="6" className="bg-gray-50 p-4">
