@@ -10,6 +10,8 @@ const RetailerDashboard = () => {
       availability: "May 28 – June 3",
       styleGuide: null,
       figmaLink: "",
+      totalSlots: 3,
+      bookedSlots: 1,
     },
   ]);
 
@@ -22,6 +24,8 @@ const RetailerDashboard = () => {
     availability: "",
     styleGuide: null,
     figmaLink: "",
+    totalSlots: 1,
+    bookedSlots: 0,
   });
 
   const handleSaveSlot = () => {
@@ -50,6 +54,8 @@ const RetailerDashboard = () => {
       availability: "",
       styleGuide: null,
       figmaLink: "",
+      totalSlots: 1,
+      bookedSlots: 0,
     });
   };
 
@@ -62,6 +68,8 @@ const RetailerDashboard = () => {
       availability: slot.availability,
       styleGuide: slot.styleGuide,
       figmaLink: slot.figmaLink,
+      totalSlots: slot.totalSlots,
+      bookedSlots: slot.bookedSlots,
     });
     setShowModal(true);
   };
@@ -85,6 +93,8 @@ const RetailerDashboard = () => {
             availability: "",
             styleGuide: null,
             figmaLink: "",
+            totalSlots: 1,
+            bookedSlots: 0,
           });
           setShowModal(true);
         }}
@@ -160,6 +170,22 @@ const RetailerDashboard = () => {
               />
             </label>
 
+            <label className="block mb-2">
+              Total Concurrent Slots
+              <input
+                type="number"
+                min="1"
+                className="w-full border p-2 rounded mt-1"
+                value={newSlot.totalSlots}
+                onChange={(e) =>
+                  setNewSlot({
+                    ...newSlot,
+                    totalSlots: parseInt(e.target.value) || 1,
+                  })
+                }
+              />
+            </label>
+
             <div className="flex justify-end space-x-3 mt-4">
               <button
                 onClick={() => {
@@ -191,6 +217,7 @@ const RetailerDashboard = () => {
             <th className="p-3 border-b">Availability</th>
             <th className="p-3 border-b">Figma Link</th>
             <th className="p-3 border-b">Style Guide</th>
+            <th className="p-3 border-b">Slot Status</th>
             <th className="p-3 border-b">Actions</th>
           </tr>
         </thead>
@@ -221,6 +248,11 @@ const RetailerDashboard = () => {
                 ) : (
                   "—"
                 )}
+              </td>
+              <td className="p-3 border-b">
+                {Array.from({ length: slot.totalSlots }, (_, i) => (
+                  <span key={i}>{i < slot.bookedSlots ? "🔴" : "🟢"}</span>
+                ))}
               </td>
               <td className="p-3 border-b space-x-2">
                 <button
