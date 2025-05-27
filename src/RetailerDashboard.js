@@ -1,11 +1,13 @@
 
 import React, { useState } from "react";
 
+const CHANNEL_OPTIONS = ["In-Store", "Site", "Email", "Social"];
 const RetailerDashboard = () => {
   const [placements, setPlacements] = useState([]);
   const [newPlacement, setNewPlacement] = useState({
     name: "",
     format: "Image",
+    channel: "Site",
     dimensions: "",
     defaultPrice: "",
     defaultConcurrentSlots: 1,
@@ -110,6 +112,22 @@ const RetailerDashboard = () => {
             </select>
           </div>
           <div>
+            <label className="block font-medium mb-1">Channel</label>
+            <select
+              className="border p-2 rounded w-full"
+              value={newPlacement.channel}
+              onChange={(e) =>
+                setNewPlacement({ ...newPlacement, channel: e.target.value })
+              }
+            >
+              {CHANNEL_OPTIONS.map((channel) => (
+                <option key={channel} value={channel}>
+                  {channel}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
             <label className="block font-medium mb-1">Dimensions</label>
             <input
               className="border p-2 rounded w-full"
@@ -191,6 +209,7 @@ const RetailerDashboard = () => {
             <thead>
               <tr className="bg-gray-100">
                 <th className="p-2 border-b">Name</th>
+                <th className="p-2 border-b">Channel</th>
                 <th className="p-2 border-b">Format</th>
                 <th className="p-2 border-b">Dimensions</th>
                 <th className="p-2 border-b">Price</th>
@@ -204,6 +223,7 @@ const RetailerDashboard = () => {
                 <React.Fragment key={p.id}>
                   <tr className="hover:bg-gray-50">
                     <td className="p-2 border-b">{p.name}</td>
+                    <td className="p-2 border-b">{p.channel}</td>
                     <td className="p-2 border-b">{p.format}</td>
                     <td className="p-2 border-b">{p.dimensions}</td>
                     <td className="p-2 border-b">${p.defaultPrice}</td>
