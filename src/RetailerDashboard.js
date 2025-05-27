@@ -19,6 +19,7 @@ const RetailerDashboard = () => {
   ]);
 
   const [showModal, setShowModal] = useState(false);
+  const [editingSlot, setEditingSlot] = useState(null);
   const [newSlot, setNewSlot] = useState({
     name: "",
     price: "",
@@ -26,16 +27,43 @@ const RetailerDashboard = () => {
     availability: "",
   });
 
-  const handleAddSlot = () => {
-    setAdSlots([
-      ...adSlots,
-      {
-        ...newSlot,
-        id: adSlots.length + 1,
-      },
-    ]);
+  const handleSaveSlot = () => {
+    if (editingSlot) {
+      // Update existing slot
+      setAdSlots((prev) =>
+        prev.map((slot) =>
+          slot.id === editingSlot.id ? { ...editingSlot, ...newSlot } : slot
+        )
+      );
+    } else {
+      // Add new slot
+      setAdSlots([
+        ...adSlots,
+        {
+          ...newSlot,
+          id: adSlots.length + 1,
+        },
+      ]);
+    }
+
     setShowModal(false);
+    setEditingSlot(null);
     setNewSlot({ name: "", price: "", period: "1 week", availability: "" });
+  };
+
+  const handleEdit = (slot) => {
+    setEditingSlot(slot);
+    setNewSlot({
+      name: slot.name,
+      price: slot.price,
+      period: slot.period,
+      availability: slot.availability,
+    });
+    setShowModal(true);
+  };
+
+  const handleArchive = (id) => {
+    setAdSlots((prev) => prev.filter((slot) => slot.id !== id));
   };
 
   return (
@@ -44,7 +72,16 @@ const RetailerDashboard = () => {
 
       <button
         className="mb-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-        onClick={() => setShowModal(true)}
+        onClick={() => {
+          setEditingSlot(null);
+          setNewSlot({
+            name: "",
+            price: "",
+            period: "1 week",
+            availability: "",
+          });
+          setShowModal(true);
+        }}
       >
         + Add New Ad Slot
       </button>
@@ -53,7 +90,9 @@ const RetailerDashboard = () => {
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded shadow-lg w-full max-w-md">
-            <h2 className="text-xl font-semibold mb-4">Add New Ad Slot</h2>
+            <h2 className="text-xl font-semibold mb-4">
+              {editingSlot ? "Edit Ad Slot" : "Add New Ad Slot"}
+            </h2>
 
             <label className="block mb-2">
               Slot Name
@@ -94,16 +133,19 @@ const RetailerDashboard = () => {
 
             <div className="flex justify-end space-x-3 mt-4">
               <button
-                onClick={() => setShowModal(false)}
+                onClick={() => {
+                  setShowModal(false);
+                  setEditingSlot(null);
+                }}
                 className="text-gray-600 hover:underline"
               >
                 Cancel
               </button>
               <button
-                onClick={handleAddSlot}
+                onClick={handleSaveSlot}
                 className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
               >
-                Add Slot
+                {editingSlot ? "Save Changes" : "Add Slot"}
               </button>
             </div>
           </div>
@@ -129,8 +171,18 @@ const RetailerDashboard = () => {
               <td className="p-3 border-b">{slot.period}</td>
               <td className="p-3 border-b">{slot.availability}</td>
               <td className="p-3 border-b space-x-2">
-                <button className="text-blue-600 hover:underline">Edit</button>
-                <button className="text-red-500 hover:underline">Archive</button>
+                <button
+                  onClick={() => handleEdit(slot)}
+                  className="text-blue-600 hover:underline"
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => handleArchive(slot.id)}
+                  className="text-red-500 hover:underline"
+                >
+                  Archive
+                </button>
               </td>
             </tr>
           ))}
