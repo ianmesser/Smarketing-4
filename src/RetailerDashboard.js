@@ -10,25 +10,44 @@ const RetailerDashboard = () => {
     defaultPrice: "",
     defaultConcurrentSlots: 1,
     schedulingMode: "cadence",
+    cadenceStartDate: "",       // NEW: Retailer sets this
+    cadencePeriodLength: 7,     // NEW: Default is 7 days
+    cadenceWeeksOut: 5,         // NEW: Default is 5 weeks
   });
 
-  const handleAddPlacement = () => {
-    setPlacements([
-      ...placements,
-      {
-        ...newPlacement,
-        id: placements.length + 1,
+const handleAddPlacement = () => {
+  setPlacements([
+    ...placements,
+    {
+      id: placements.length + 1,
+      name: newPlacement.name,
+      format: newPlacement.format,
+      dimensions: newPlacement.dimensions,
+      defaultPrice: newPlacement.defaultPrice,
+      defaultConcurrentSlots: newPlacement.defaultConcurrentSlots,
+      schedulingMode: newPlacement.schedulingMode,
+      cadenceOverride: {
+        enabled: true,
+        startDate: newPlacement.cadenceStartDate,
+        periodLength: parseInt(newPlacement.cadencePeriodLength),
+        maxWeeksOut: parseInt(newPlacement.cadenceWeeksOut),
       },
-    ]);
-    setNewPlacement({
-      name: "",
-      format: "Image",
-      dimensions: "",
-      defaultPrice: "",
-      defaultConcurrentSlots: 1,
-      schedulingMode: "cadence",
-    });
-  };
+    },
+  ]);
+
+  // Reset the form
+  setNewPlacement({
+    name: "",
+    format: "Image",
+    dimensions: "",
+    defaultPrice: "",
+    defaultConcurrentSlots: 1,
+    schedulingMode: "cadence",
+    cadenceStartDate: "",
+    cadencePeriodLength: 7,
+    cadenceWeeksOut: 5,
+  });
+};
 
   // 📦 Ad Slots State
   const [adSlots, setAdSlots] = useState([]);
@@ -172,6 +191,41 @@ const generateAvailability = (placement, cadence = retailerCadence) => {
           />
           <input
             className="border p-2 rounded"
+            type="date"
+            placeholder="Start Date"
+            value={newPlacement.cadenceStartDate}
+            onChange={(e) =>
+              setNewPlacement({ ...newPlacement, cadenceStartDate: e.target.value })
+            }
+          />
+          <input
+            className="border p-2 rounded"
+            type="number"
+            min="1"
+            placeholder="Period Length (days)"
+            value={newPlacement.cadencePeriodLength}
+            onChange={(e) =>
+              setNewPlacement({
+                ...newPlacement,
+                cadencePeriodLength: parseInt(e.target.value) || 1,
+              })
+            }
+          />
+          <input
+            className="border p-2 rounded"
+            type="number"
+            min="1"
+            placeholder="Weeks to Publish"
+            value={newPlacement.cadenceWeeksOut}
+            onChange={(e) =>
+              setNewPlacement({
+                ...newPlacement,
+                cadenceWeeksOut: parseInt(e.target.value) || 1,
+              })
+            }
+          />
+          <input
+            className="border p-2 rounded"
             placeholder="Default Price"
             value={newPlacement.defaultPrice}
             onChange={(e) => setNewPlacement({ ...newPlacement, defaultPrice: e.target.value })}
@@ -213,6 +267,7 @@ const generateAvailability = (placement, cadence = retailerCadence) => {
                 <th className="p-2 border-b">Slots</th>
                 <th className="p-2 border-b">Scheduling</th>
                 <th className="p-2 border-b">Generate</th>
+                <th className="p-2 border-b">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -224,6 +279,21 @@ const generateAvailability = (placement, cadence = retailerCadence) => {
                   <td className="p-2 border-b">${p.defaultPrice}</td>
                   <td className="p-2 border-b">{p.defaultConcurrentSlots}</td>
                   <td className="p-2 border-b capitalize">{p.schedulingMode}</td>
+                  <td className="p-2 border-b">
+                    <button
+                      className="text-sm text-indigo-600 underline"
+                      onClick={() => {
+                        const availability = generateAvailability(p, {
+                          startDate: p.cadenceOverride.startDate,
+                          periodLength: p.cadenceOverride.periodLength,
+                          maxWeeksOut: p.cadenceOverride.maxWeeksOut,
+                        });
+                        setAvailabilities((prev) => [...prev, ...availability]);
+                      }}
+                    >
+                      Publish Availability
+                    </button>
+                  </td>
                   <td className="p-2 border-b">
                     <button
                       className="text-sm text-indigo-600 underline"
