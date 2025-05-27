@@ -1,26 +1,41 @@
 import React, { useState } from "react";
 
 const RetailerDashboard = () => {
-  const [adSlots, setAdSlots] = useState([
-    {
-      id: 1,
-      name: "Homepage 2-Up",
-      price: "$10,000",
-      period: "1 week",
-      availability: "May 28 – June 3",
-      styleGuide: null,
-      figmaLink: "",
-      totalSlots: 3,
-      bookedSlots: 1,
-    },
-  ]);
+  // 🔧 Placement Manager State
+  const [placements, setPlacements] = useState([]);
+  const [newPlacement, setNewPlacement] = useState({
+    name: "",
+    format: "Image",
+    dimensions: "",
+    defaultPrice: "",
+    defaultConcurrentSlots: 1,
+    schedulingMode: "cadence",
+  });
 
+  const handleAddPlacement = () => {
+    setPlacements([
+      ...placements,
+      {
+        ...newPlacement,
+        id: placements.length + 1,
+      },
+    ]);
+    setNewPlacement({
+      name: "",
+      format: "Image",
+      dimensions: "",
+      defaultPrice: "",
+      defaultConcurrentSlots: 1,
+      schedulingMode: "cadence",
+    });
+  };
+
+  // 📦 Ad Slots State
+  const [adSlots, setAdSlots] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [editingSlot, setEditingSlot] = useState(null);
   const [newSlot, setNewSlot] = useState({
-    name: "",
-    price: "",
-    period: "1 week",
+    placementId: "",
     availability: "",
     styleGuide: null,
     figmaLink: "",
@@ -29,17 +44,27 @@ const RetailerDashboard = () => {
   });
 
   const handleSaveSlot = () => {
+    const selectedPlacement = placements.find(p => p.id === parseInt(newSlot.placementId));
+    if (!selectedPlacement) return;
+
+    const slotData = {
+      ...newSlot,
+      slotName: selectedPlacement.name,
+      price: selectedPlacement.defaultPrice,
+      period: "1 week",
+    };
+
     if (editingSlot) {
       setAdSlots((prev) =>
         prev.map((slot) =>
-          slot.id === editingSlot.id ? { ...editingSlot, ...newSlot } : slot
+          slot.id === editingSlot.id ? { ...editingSlot, ...slotData } : slot
         )
       );
     } else {
       setAdSlots([
         ...adSlots,
         {
-          ...newSlot,
+          ...slotData,
           id: adSlots.length + 1,
         },
       ]);
@@ -48,9 +73,7 @@ const RetailerDashboard = () => {
     setShowModal(false);
     setEditingSlot(null);
     setNewSlot({
-      name: "",
-      price: "",
-      period: "1 week",
+      placementId: "",
       availability: "",
       styleGuide: null,
       figmaLink: "",
@@ -62,9 +85,7 @@ const RetailerDashboard = () => {
   const handleEdit = (slot) => {
     setEditingSlot(slot);
     setNewSlot({
-      name: slot.name,
-      price: slot.price,
-      period: slot.period,
+      placementId: placements.find(p => p.name === slot.slotName)?.id || "",
       availability: slot.availability,
       styleGuide: slot.styleGuide,
       figmaLink: slot.figmaLink,
@@ -79,17 +100,101 @@ const RetailerDashboard = () => {
   };
 
   return (
-    <div className="p-8">
-      <h1 className="text-3xl font-bold mb-6">Retailer Dashboard</h1>
+    <div className="p-8 space-y-10">
+      <h1 className="text-3xl font-bold mb-2">Retailer Dashboard</h1>
 
+      {/* 🔧 Placement Manager */}
+      <div>
+        <h2 className="text-xl font-semibold mb-2">Add New Placement</h2>
+        <div className="grid grid-cols-2 gap-4 mb-4">
+          <input
+            className="border p-2 rounded"
+            placeholder="Name"
+            value={newPlacement.name}
+            onChange={(e) => setNewPlacement({ ...newPlacement, name: e.target.value })}
+          />
+          <select
+            className="border p-2 rounded"
+            value={newPlacement.format}
+            onChange={(e) => setNewPlacement({ ...newPlacement, format: e.target.value })}
+          >
+            <option value="Image">Image</option>
+            <option value="Video">Video</option>
+            <option value="HTML">HTML</option>
+          </select>
+          <input
+            className="border p-2 rounded"
+            placeholder="Dimensions (e.g. 1600x600)"
+            value={newPlacement.dimensions}
+            onChange={(e) => setNewPlacement({ ...newPlacement, dimensions: e.target.value })}
+          />
+          <input
+            className="border p-2 rounded"
+            placeholder="Default Price"
+            value={newPlacement.defaultPrice}
+            onChange={(e) => setNewPlacement({ ...newPlacement, defaultPrice: e.target.value })}
+          />
+          <input
+            className="border p-2 rounded"
+            placeholder="Concurrent Slots"
+            type="number"
+            value={newPlacement.defaultConcurrentSlots}
+            onChange={(e) =>
+              setNewPlacement({ ...newPlacement, defaultConcurrentSlots: parseInt(e.target.value) })
+            }
+          />
+          <select
+            className="border p-2 rounded"
+            value={newPlacement.schedulingMode}
+            onChange={(e) => setNewPlacement({ ...newPlacement, schedulingMode: e.target.value })}
+          >
+            <option value="cadence">Cadence-based</option>
+            <option value="custom">Custom-dated</option>
+          </select>
+        </div>
+        <button
+          onClick={handleAddPlacement}
+          className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+        >
+          Add Placement
+        </button>
+
+        {/* Placement Table */}
+        {placements.length > 0 && (
+          <table className="mt-6 w-full text-left border-collapse">
+            <thead>
+              <tr className="bg-gray-100">
+                <th className="p-2 border-b">Name</th>
+                <th className="p-2 border-b">Format</th>
+                <th className="p-2 border-b">Dimensions</th>
+                <th className="p-2 border-b">Price</th>
+                <th className="p-2 border-b">Slots</th>
+                <th className="p-2 border-b">Scheduling</th>
+              </tr>
+            </thead>
+            <tbody>
+              {placements.map((p) => (
+                <tr key={p.id} className="hover:bg-gray-50">
+                  <td className="p-2 border-b">{p.name}</td>
+                  <td className="p-2 border-b">{p.format}</td>
+                  <td className="p-2 border-b">{p.dimensions}</td>
+                  <td className="p-2 border-b">${p.defaultPrice}</td>
+                  <td className="p-2 border-b">{p.defaultConcurrentSlots}</td>
+                  <td className="p-2 border-b capitalize">{p.schedulingMode}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
+
+      {/* ➕ Add New Ad Slot Button */}
       <button
-        className="mb-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
         onClick={() => {
           setEditingSlot(null);
           setNewSlot({
-            name: "",
-            price: "",
-            period: "1 week",
+            placementId: "",
             availability: "",
             styleGuide: null,
             figmaLink: "",
@@ -102,7 +207,7 @@ const RetailerDashboard = () => {
         + Add New Ad Slot
       </button>
 
-      {/* Modal */}
+      {/* ➕ Modal for Creating/Editing Slot */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded shadow-lg w-full max-w-md">
@@ -111,27 +216,19 @@ const RetailerDashboard = () => {
             </h2>
 
             <label className="block mb-2">
-              Slot Name
-              <input
-                type="text"
+              Placement
+              <select
                 className="w-full border p-2 rounded mt-1"
-                value={newSlot.name}
-                onChange={(e) =>
-                  setNewSlot({ ...newSlot, name: e.target.value })
-                }
-              />
-            </label>
-
-            <label className="block mb-2">
-              Price
-              <input
-                type="text"
-                className="w-full border p-2 rounded mt-1"
-                value={newSlot.price}
-                onChange={(e) =>
-                  setNewSlot({ ...newSlot, price: e.target.value })
-                }
-              />
+                value={newSlot.placementId}
+                onChange={(e) => setNewSlot({ ...newSlot, placementId: e.target.value })}
+              >
+                <option value="">Select...</option>
+                {placements.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.name}
+                  </option>
+                ))}
+              </select>
             </label>
 
             <label className="block mb-2">
@@ -170,22 +267,6 @@ const RetailerDashboard = () => {
               />
             </label>
 
-            <label className="block mb-2">
-              Total Concurrent Slots
-              <input
-                type="number"
-                min="1"
-                className="w-full border p-2 rounded mt-1"
-                value={newSlot.totalSlots}
-                onChange={(e) =>
-                  setNewSlot({
-                    ...newSlot,
-                    totalSlots: parseInt(e.target.value) || 1,
-                  })
-                }
-              />
-            </label>
-
             <div className="flex justify-end space-x-3 mt-4">
               <button
                 onClick={() => {
@@ -207,26 +288,21 @@ const RetailerDashboard = () => {
         </div>
       )}
 
-      {/* Table */}
+      {/* 📋 Ad Slot Table */}
       <table className="w-full text-left border-collapse">
         <thead>
           <tr className="bg-gray-100">
             <th className="p-3 border-b">Slot Name</th>
-            <th className="p-3 border-b">Price</th>
-            <th className="p-3 border-b">Period</th>
             <th className="p-3 border-b">Availability</th>
             <th className="p-3 border-b">Figma Link</th>
             <th className="p-3 border-b">Style Guide</th>
-            <th className="p-3 border-b">Slot Status</th>
             <th className="p-3 border-b">Actions</th>
           </tr>
         </thead>
         <tbody>
           {adSlots.map((slot) => (
             <tr key={slot.id} className="hover:bg-gray-50">
-              <td className="p-3 border-b">{slot.name}</td>
-              <td className="p-3 border-b">{slot.price}</td>
-              <td className="p-3 border-b">{slot.period}</td>
+              <td className="p-3 border-b">{slot.slotName}</td>
               <td className="p-3 border-b">{slot.availability}</td>
               <td className="p-3 border-b">
                 {slot.figmaLink ? (
@@ -243,16 +319,7 @@ const RetailerDashboard = () => {
                 )}
               </td>
               <td className="p-3 border-b">
-                {slot.styleGuide ? (
-                  <span className="text-green-600">Uploaded</span>
-                ) : (
-                  "—"
-                )}
-              </td>
-              <td className="p-3 border-b">
-                {Array.from({ length: slot.totalSlots }, (_, i) => (
-                  <span key={i}>{i < slot.bookedSlots ? "🔴" : "🟢"}</span>
-                ))}
+                {slot.styleGuide ? "Uploaded" : "—"}
               </td>
               <td className="p-3 border-b space-x-2">
                 <button
