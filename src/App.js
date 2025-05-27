@@ -1,3 +1,4 @@
+import "./AvailabilityGenerator";
 import React from "react";
 import RetailerDashboard from "./RetailerDashboard";
 
