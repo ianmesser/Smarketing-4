@@ -52,6 +52,7 @@ const RetailerDashboard = () => {
       {
         id: placements.length + 1,
         name: newPlacement.name,
+        channel: newPlacement.channel,
         format: newPlacement.format,
         dimensions: newPlacement.dimensions,
         defaultPrice: newPlacement.defaultPrice,
