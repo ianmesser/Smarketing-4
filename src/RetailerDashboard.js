@@ -34,6 +34,7 @@ const RetailerDashboard = () => {
   const [adSlots, setAdSlots] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [editingSlot, setEditingSlot] = useState(null);
+  const [availabilities, setAvailabilities] = useState([]);
   const [newSlot, setNewSlot] = useState({
     placementId: "",
     availability: "",
@@ -42,6 +43,47 @@ const RetailerDashboard = () => {
     totalSlots: 1,
     bookedSlots: 0,
   });
+
+// Retailer's default cadence settings
+const retailerCadence = {
+  startDate: "2025-05-26", // Date to start generating from
+  startDay: "Sunday",      // Optional for now
+  periodLength: 7,         // Each period is 7 days
+  maxWeeksOut: 5           // Only generate 5 weeks ahead
+};
+
+// Function to generate availability blocks
+const generateAvailability = (placement, cadence = retailerCadence) => {
+  const availability = [];
+  const start = new Date(
+    placement.cadenceOverride?.enabled
+      ? placement.cadenceOverride.startDate
+      : cadence.startDate
+  );
+  const periodLength = placement.cadenceOverride?.enabled
+    ? placement.cadenceOverride.periodLength
+    : cadence.periodLength;
+
+  for (let i = 0; i < cadence.maxWeeksOut; i++) {
+    const periodStart = new Date(start);
+    periodStart.setDate(start.getDate() + i * periodLength);
+
+    const periodEnd = new Date(periodStart);
+    periodEnd.setDate(periodStart.getDate() + periodLength - 1);
+
+    availability.push({
+      placementId: placement.id,
+      slotName: placement.name,
+      startDate: periodStart.toISOString().split("T")[0],
+      endDate: periodEnd.toISOString().split("T")[0],
+      totalSlots: placement.defaultConcurrentSlots,
+      bookedSlots: 0
+    });
+  }
+
+  return availability;
+};
+
 
   const handleSaveSlot = () => {
     const selectedPlacement = placements.find(p => p.id === parseInt(newSlot.placementId));
@@ -170,6 +212,7 @@ const RetailerDashboard = () => {
                 <th className="p-2 border-b">Price</th>
                 <th className="p-2 border-b">Slots</th>
                 <th className="p-2 border-b">Scheduling</th>
+                <th className="p-2 border-b">Generate</th>
               </tr>
             </thead>
             <tbody>
@@ -181,6 +224,18 @@ const RetailerDashboard = () => {
                   <td className="p-2 border-b">${p.defaultPrice}</td>
                   <td className="p-2 border-b">{p.defaultConcurrentSlots}</td>
                   <td className="p-2 border-b capitalize">{p.schedulingMode}</td>
+                  <td className="p-2 border-b">
+                    <button
+                      className="text-sm text-indigo-600 underline"
+                      onClick={() => {
+                        const newAvailability = generateAvailability(p);
+                        setAvailabilities((prev) => [...prev, ...newAvailability]);
+                      }}
+                    >
+                      Generate
+                    </button>
+                  </td>
+
                 </tr>
               ))}
             </tbody>
@@ -339,6 +394,34 @@ const RetailerDashboard = () => {
           ))}
         </tbody>
       </table>
+{availabilities.length > 0 && (
+  <div className="mt-8">
+    <h2 className="text-xl font-semibold mb-2">Generated Availability</h2>
+    <table className="w-full text-left border-collapse">
+      <thead>
+        <tr className="bg-gray-100">
+          <th className="p-2 border-b">Placement</th>
+          <th className="p-2 border-b">Start Date</th>
+          <th className="p-2 border-b">End Date</th>
+          <th className="p-2 border-b">Total Slots</th>
+          <th className="p-2 border-b">Booked Slots</th>
+        </tr>
+      </thead>
+      <tbody>
+        {availabilities.map((slot, i) => (
+          <tr key={i} className="hover:bg-gray-50">
+            <td className="p-2 border-b">{slot.slotName}</td>
+            <td className="p-2 border-b">{slot.startDate}</td>
+            <td className="p-2 border-b">{slot.endDate}</td>
+            <td className="p-2 border-b">{slot.totalSlots}</td>
+            <td className="p-2 border-b">{slot.bookedSlots}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+)}
+
     </div>
   );
 };
