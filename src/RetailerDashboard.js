@@ -8,13 +8,8 @@ const RetailerDashboard = () => {
       price: "$10,000",
       period: "1 week",
       availability: "May 28 – June 3",
-    },
-    {
-      id: 2,
-      name: "Video Hero",
-      price: "$15,000",
-      period: "1 week",
-      availability: "May 28 – June 3",
+      styleGuide: null,
+      figmaLink: "",
     },
   ]);
 
@@ -25,18 +20,18 @@ const RetailerDashboard = () => {
     price: "",
     period: "1 week",
     availability: "",
+    styleGuide: null,
+    figmaLink: "",
   });
 
   const handleSaveSlot = () => {
     if (editingSlot) {
-      // Update existing slot
       setAdSlots((prev) =>
         prev.map((slot) =>
           slot.id === editingSlot.id ? { ...editingSlot, ...newSlot } : slot
         )
       );
     } else {
-      // Add new slot
       setAdSlots([
         ...adSlots,
         {
@@ -48,7 +43,14 @@ const RetailerDashboard = () => {
 
     setShowModal(false);
     setEditingSlot(null);
-    setNewSlot({ name: "", price: "", period: "1 week", availability: "" });
+    setNewSlot({
+      name: "",
+      price: "",
+      period: "1 week",
+      availability: "",
+      styleGuide: null,
+      figmaLink: "",
+    });
   };
 
   const handleEdit = (slot) => {
@@ -58,6 +60,8 @@ const RetailerDashboard = () => {
       price: slot.price,
       period: slot.period,
       availability: slot.availability,
+      styleGuide: slot.styleGuide,
+      figmaLink: slot.figmaLink,
     });
     setShowModal(true);
   };
@@ -79,6 +83,8 @@ const RetailerDashboard = () => {
             price: "",
             period: "1 week",
             availability: "",
+            styleGuide: null,
+            figmaLink: "",
           });
           setShowModal(true);
         }}
@@ -131,6 +137,29 @@ const RetailerDashboard = () => {
               />
             </label>
 
+            <label className="block mb-2">
+              Style Guide File
+              <input
+                type="file"
+                className="w-full border p-2 rounded mt-1"
+                onChange={(e) =>
+                  setNewSlot({ ...newSlot, styleGuide: e.target.files[0] })
+                }
+              />
+            </label>
+
+            <label className="block mb-2">
+              Figma Link
+              <input
+                type="url"
+                className="w-full border p-2 rounded mt-1"
+                value={newSlot.figmaLink}
+                onChange={(e) =>
+                  setNewSlot({ ...newSlot, figmaLink: e.target.value })
+                }
+              />
+            </label>
+
             <div className="flex justify-end space-x-3 mt-4">
               <button
                 onClick={() => {
@@ -160,6 +189,8 @@ const RetailerDashboard = () => {
             <th className="p-3 border-b">Price</th>
             <th className="p-3 border-b">Period</th>
             <th className="p-3 border-b">Availability</th>
+            <th className="p-3 border-b">Figma Link</th>
+            <th className="p-3 border-b">Style Guide</th>
             <th className="p-3 border-b">Actions</th>
           </tr>
         </thead>
@@ -170,6 +201,27 @@ const RetailerDashboard = () => {
               <td className="p-3 border-b">{slot.price}</td>
               <td className="p-3 border-b">{slot.period}</td>
               <td className="p-3 border-b">{slot.availability}</td>
+              <td className="p-3 border-b">
+                {slot.figmaLink ? (
+                  <a
+                    href={slot.figmaLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 underline"
+                  >
+                    View
+                  </a>
+                ) : (
+                  "—"
+                )}
+              </td>
+              <td className="p-3 border-b">
+                {slot.styleGuide ? (
+                  <span className="text-green-600">Uploaded</span>
+                ) : (
+                  "—"
+                )}
+              </td>
               <td className="p-3 border-b space-x-2">
                 <button
                   onClick={() => handleEdit(slot)}
