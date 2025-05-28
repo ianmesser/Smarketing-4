@@ -18,6 +18,7 @@ const RetailerDashboard = () => {
     styleGuide: null,
   });
 
+  const [selectedPlacementIds, setSelectedPlacementIds] = useState([]);
   const [editingPlacement, setEditingPlacement] = useState(null);
   const [editedPlacement, setEditedPlacement] = useState(null);
   
@@ -249,10 +250,45 @@ const RetailerDashboard = () => {
           Add Placement
         </button>
 
+        {selectedPlacementIds.length > 0 && (
+          <button
+            onClick={() => {
+              const confirmDelete = window.confirm(
+                `Are you sure you want to delete ${selectedPlacementIds.length} placement(s)?`
+              );
+              if (confirmDelete) {
+                setPlacements((prev) =>
+                  prev.filter((p) => !selectedPlacementIds.includes(p.id))
+                );
+                setSelectedPlacementIds([]);
+              }
+            }}
+            className="ml-4 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+          >
+            Delete Selected
+          </button>
+        )}
+
         {placements.length > 0 && (
           <table className="mt-6 w-full text-left border-collapse">
             <thead>
               <tr className="bg-gray-100">
+                <th className="p-2 border-b">
+                  <input
+                    type="checkbox"
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setSelectedPlacementIds(placements.map((p) => p.id));
+                      } else {
+                        setSelectedPlacementIds([]);
+                      }
+                    }}
+                    checked={
+                      placements.length > 0 &&
+                      selectedPlacementIds.length === placements.length
+                    }
+                  />
+                </th>
                 <th className="p-2 border-b">Name</th>
                 <th className="p-2 border-b">Channel</th>
                 <th className="p-2 border-b">Format</th>
@@ -270,7 +306,22 @@ const RetailerDashboard = () => {
                   <tr className="hover:bg-gray-50">
                     {editingPlacement === p.id ? (
                       <>
-                        <td className="p-2 border-b">
+                       <td className="p-2 border-b">
+                        <input
+                          type="checkbox"
+                          checked={selectedPlacementIds.includes(p.id)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setSelectedPlacementIds((prev) => [...prev, p.id]);
+                            } else {
+                              setSelectedPlacementIds((prev) =>
+                                prev.filter((id) => id !== p.id)
+                              );
+                            }
+                          }}
+                        />
+                      </td>
+                       <td className="p-2 border-b">
                           <input
                             className="border p-1 rounded w-full"
                             value={editedPlacement.name}
