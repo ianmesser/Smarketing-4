@@ -168,6 +168,8 @@ const RetailerDashboard = () => {
           <div>
             <label className="block font-medium mb-1">Default Price</label>
             <input
+              type="number"                                
+              min="0"
               className="border p-2 rounded w-full"
               placeholder="e.g. 10000"
               value={newPlacement.defaultPrice}
