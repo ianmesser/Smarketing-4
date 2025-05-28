@@ -79,6 +79,13 @@ const RetailerDashboard = () => {
         maxWeeksOut: newPlacement.cadenceWeeksOut,
       },
     };
+
+  const handleDeletePlacement = (id) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this placement?");
+    if (confirmDelete) {
+      setPlacements((prev) => prev.filter((p) => p.id !== id));
+    }
+  };
   
     setPlacements([...placements, placement]);
   
@@ -394,6 +401,12 @@ const RetailerDashboard = () => {
                             onClick={() => startEditingPlacement(p)}
                           >
                             Edit
+                          </button>
+                          <button
+                            onClick={() => handleDeletePlacement(p.id)}
+                            className="ml-2 text-sm text-red-600 underline"
+                          >
+                            Delete
                           </button>
                         </td>
                       </>
