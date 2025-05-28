@@ -237,6 +237,7 @@ const RetailerDashboard = () => {
                 <th className="p-2 border-b">Slots</th>
                 <th className="p-2 border-b">Scheduling</th>
                 <th className="p-2 border-b">Actions</th>
+                <th className="p-2 border-b">Style Guide</th>
               </tr>
             </thead>
             <tbody>
@@ -250,6 +251,9 @@ const RetailerDashboard = () => {
                     <td className="p-2 border-b">${p.defaultPrice}</td>
                     <td className="p-2 border-b">{p.defaultConcurrentSlots}</td>
                     <td className="p-2 border-b capitalize">{p.schedulingMode}</td>
+                    <td className="p-2 border-b">
+                      {p.styleGuide ? p.styleGuide.name : "—"}
+                    </td>
                     <td className="p-2 border-b">
                       <button
                         className="text-sm text-indigo-600 underline"
