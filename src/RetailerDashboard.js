@@ -180,7 +180,9 @@ const RetailerDashboard = () => {
           </div>
 
           <div className="col-span-2 mt-4">
-            <h3 className="font-semibold mb-2">Cadence Settings</h3>
+            {newPlacement.schedulingMode === "cadence" && (
+              <h3 className="font-semibold mb-2">Cadence Settings</h3>
+            )}
           </div>
           <div>
            {newPlacement.schedulingMode === "cadence" && (
