@@ -236,8 +236,8 @@ const RetailerDashboard = () => {
                 <th className="p-2 border-b">Price</th>
                 <th className="p-2 border-b">Slots</th>
                 <th className="p-2 border-b">Scheduling</th>
-                <th className="p-2 border-b">Actions</th>
                 <th className="p-2 border-b">Style Guide</th>
+                <th className="p-2 border-b">Actions</th>
               </tr>
             </thead>
             <tbody>
