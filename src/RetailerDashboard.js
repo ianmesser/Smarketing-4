@@ -272,6 +272,13 @@ const RetailerDashboard = () => {
                       >
                         Publish Availability
                       </button>
+
+                      <button
+                        className="text-sm text-blue-600 underline ml-2"
+                        onClick={() => startEditingPlacement(p)}
+                      >
+                        Edit
+                      </button>
                     </td>
                   </tr>
               
