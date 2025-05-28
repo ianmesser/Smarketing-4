@@ -248,7 +248,18 @@ const RetailerDashboard = () => {
                     <td className="p-2 border-b">{p.defaultConcurrentSlots}</td>
                     <td className="p-2 border-b capitalize">{p.schedulingMode}</td>
                     <td className="p-2 border-b">
-                      {p.styleGuide ? p.styleGuide.name : "—"}
+                      {p.styleGuide ? (
+                        <a
+                          href={URL.createObjectURL(p.styleGuide)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 underline text-sm"
+                        >
+                          {p.styleGuide.name}
+                        </a>
+                      ) : (
+                        "—"
+                      )}
                     </td>
                     <td className="p-2 border-b">
                       <button
