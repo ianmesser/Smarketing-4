@@ -183,19 +183,22 @@ const RetailerDashboard = () => {
             <h3 className="font-semibold mb-2">Cadence Settings</h3>
           </div>
           <div>
-            <label className="block font-medium mb-1">Period Length (Days)</label>
-            <input
-              className="border p-2 rounded w-full"
-              type="number"
-              min="1"
-              value={newPlacement.cadencePeriodLength}
-              onChange={(e) =>
-                setNewPlacement({
-                  ...newPlacement,
-                  cadencePeriodLength: parseInt(e.target.value) || 1,
-                })
-              }
-            />
+           {newPlacement.schedulingMode === "cadence" && (
+            <>
+              <label className="font-medium mt-2">Period Length (in days)</label>
+              <input
+                type="number"
+                className="border p-2 rounded"
+                value={newPlacement.cadencePeriodLength}
+                onChange={(e) =>
+                  setNewPlacement({
+                    ...newPlacement,
+                    cadencePeriodLength: parseInt(e.target.value) || 7,
+                  })
+                }
+              />
+            </>
+          )}
           </div>
         </div>
         <button
