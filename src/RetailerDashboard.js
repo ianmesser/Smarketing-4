@@ -48,26 +48,20 @@ const RetailerDashboard = () => {
   };
 
   const handleAddPlacement = () => {
-    setPlacements([
-      ...placements,
-      {
-        id: placements.length + 1,
-        name: newPlacement.name,
-        channel: newPlacement.channel,
-        format: newPlacement.format,
-        dimensions: newPlacement.dimensions,
-        defaultPrice: newPlacement.defaultPrice,
-        defaultConcurrentSlots: newPlacement.defaultConcurrentSlots,
-        schedulingMode: newPlacement.schedulingMode,
-        cadenceOverride: {
-          enabled: true,
-          startDate: newPlacement.cadenceStartDate,
-          periodLength: parseInt(newPlacement.cadencePeriodLength),
-          maxWeeksOut: parseInt(newPlacement.cadenceWeeksOut),
-        },
+    const placement = {
+      id: Date.now(),
+      ...newPlacement,
+      styleGuide: newPlacement.styleGuide, // ✅ This line is important
+      cadenceOverride: {
+        startDate: newPlacement.cadenceStartDate,
+        periodLength: newPlacement.cadencePeriodLength,
+        maxWeeksOut: newPlacement.cadenceWeeksOut,
       },
-    ]);
-
+    };
+  
+    setPlacements([...placements, placement]);
+  
+    // Resetting form
     setNewPlacement({
       name: "",
       format: "Image",
@@ -75,11 +69,11 @@ const RetailerDashboard = () => {
       defaultPrice: "",
       defaultConcurrentSlots: 1,
       schedulingMode: "cadence",
-      cadenceStartDate: "",
       cadencePeriodLength: 7,
+      cadenceStartDate: "",
       cadenceWeeksOut: 5,
       channel: "",
-      styleGuide: null,
+      styleGuide: null, // ✅ also reset this
     });
   };
 
