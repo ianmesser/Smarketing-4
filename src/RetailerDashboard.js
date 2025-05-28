@@ -18,6 +18,27 @@ const RetailerDashboard = () => {
     styleGuide: null,
   });
 
+  const [editingPlacement, setEditingPlacement] = useState(null);
+  const [editedPlacement, setEditedPlacement] = useState(null);
+  
+  const startEditingPlacement = (placement) => {
+    setEditingPlacement(placement.id);
+    setEditedPlacement({ ...placement });
+  };
+  
+  const cancelEditingPlacement = () => {
+    setEditingPlacement(null);
+    setEditedPlacement(null);
+  };
+  
+  const saveEditedPlacement = () => {
+    setPlacements((prev) =>
+      prev.map((p) => (p.id === editedPlacement.id ? editedPlacement : p))
+    );
+    setEditingPlacement(null);
+    setEditedPlacement(null);
+  };
+
   const [availabilities, setAvailabilities] = useState([]);
   const [publishingPlacementId, setPublishingPlacementId] = useState(null);
   const [publishStartDate, setPublishStartDate] = useState("");
@@ -240,47 +261,145 @@ const RetailerDashboard = () => {
               {placements.map((p) => (
                 <React.Fragment key={p.id}>
                   <tr className="hover:bg-gray-50">
-                    <td className="p-2 border-b">{p.name}</td>
-                    <td className="p-2 border-b">{p.channel}</td>
-                    <td className="p-2 border-b">{p.format}</td>
-                    <td className="p-2 border-b">{p.dimensions}</td>
-                    <td className="p-2 border-b">${p.defaultPrice}</td>
-                    <td className="p-2 border-b">{p.defaultConcurrentSlots}</td>
-                    <td className="p-2 border-b capitalize">{p.schedulingMode}</td>
-                    <td className="p-2 border-b">
-                      {p.styleGuide ? (
-                        <a
-                          href={URL.createObjectURL(p.styleGuide)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-600 underline text-sm"
-                        >
-                          {p.styleGuide.name}
-                        </a>
-                      ) : (
-                        "—"
-                      )}
-                    </td>
-                    <td className="p-2 border-b">
-                      <button
-                        className="text-sm text-indigo-600 underline"
-                        onClick={() => {
-                          setPublishingPlacementId(p.id);
-                          setPublishStartDate("");
-                          setPublishWeeks(5);
-                        }}
-                      >
-                        Publish Availability
-                      </button>
-
-                      <button
-                        className="text-sm text-blue-600 underline ml-2"
-                        onClick={() => startEditingPlacement(p)}
-                      >
-                        Edit
-                      </button>
-                    </td>
+                    {editingPlacement === p.id ? (
+                      <>
+                        <td className="p-2 border-b">
+                          <input
+                            className="border p-1 rounded w-full"
+                            value={editedPlacement.name}
+                            onChange={(e) =>
+                              setEditedPlacement({ ...editedPlacement, name: e.target.value })
+                            }
+                          />
+                        </td>
+                        <td className="p-2 border-b">
+                          <select
+                            className="border p-1 rounded w-full"
+                            value={editedPlacement.channel}
+                            onChange={(e) =>
+                              setEditedPlacement({ ...editedPlacement, channel: e.target.value })
+                            }
+                          >
+                            {CHANNEL_OPTIONS.map((channel) => (
+                              <option key={channel} value={channel}>
+                                {channel}
+                              </option>
+                            ))}
+                          </select>
+                        </td>
+                        <td className="p-2 border-b">
+                          <select
+                            className="border p-1 rounded w-full"
+                            value={editedPlacement.format}
+                            onChange={(e) =>
+                              setEditedPlacement({ ...editedPlacement, format: e.target.value })
+                            }
+                          >
+                            <option value="Image">Image</option>
+                            <option value="Video">Video</option>
+                            <option value="HTML">HTML</option>
+                          </select>
+                        </td>
+                        <td className="p-2 border-b">
+                          <input
+                            className="border p-1 rounded w-full"
+                            value={editedPlacement.dimensions}
+                            onChange={(e) =>
+                              setEditedPlacement({
+                                ...editedPlacement,
+                                dimensions: e.target.value,
+                              })
+                            }
+                          />
+                        </td>
+                        <td className="p-2 border-b">
+                          <input
+                            className="border p-1 rounded w-full"
+                            value={editedPlacement.defaultPrice}
+                            onChange={(e) =>
+                              setEditedPlacement({
+                                ...editedPlacement,
+                                defaultPrice: e.target.value,
+                              })
+                            }
+                          />
+                        </td>
+                        <td className="p-2 border-b">
+                          <input
+                            className="border p-1 rounded w-full"
+                            type="number"
+                            min="1"
+                            value={editedPlacement.defaultConcurrentSlots}
+                            onChange={(e) =>
+                              setEditedPlacement({
+                                ...editedPlacement,
+                                defaultConcurrentSlots: parseInt(e.target.value),
+                              })
+                            }
+                          />
+                        </td>
+                        <td className="p-2 border-b">{editedPlacement.schedulingMode}</td>
+                        <td className="p-2 border-b">—</td>
+                        <td className="p-2 border-b">
+                          <button
+                            className="text-green-600 underline mr-2"
+                            onClick={saveEditedPlacement}
+                          >
+                            Save
+                          </button>
+                          <button
+                            className="text-gray-500 underline"
+                            onClick={cancelEditingPlacement}
+                          >
+                            Cancel
+                          </button>
+                        </td>
+                      </>
+                    ) : (
+                      <>
+                        <td className="p-2 border-b">{p.name}</td>
+                        <td className="p-2 border-b">{p.channel}</td>
+                        <td className="p-2 border-b">{p.format}</td>
+                        <td className="p-2 border-b">{p.dimensions}</td>
+                        <td className="p-2 border-b">${p.defaultPrice}</td>
+                        <td className="p-2 border-b">{p.defaultConcurrentSlots}</td>
+                        <td className="p-2 border-b capitalize">{p.schedulingMode}</td>
+                        <td className="p-2 border-b">
+                          {p.styleGuide ? (
+                            <a
+                              href={URL.createObjectURL(p.styleGuide)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-600 underline"
+                            >
+                              {p.styleGuide.name}
+                            </a>
+                          ) : (
+                            "—"
+                          )}
+                        </td>
+                        <td className="p-2 border-b">
+                          <button
+                            className="text-sm text-indigo-600 underline mr-2"
+                            onClick={() => {
+                              setPublishingPlacementId(p.id);
+                              setPublishStartDate("");
+                              setPublishWeeks(5);
+                            }}
+                          >
+                            Publish Availability
+                          </button>
+                          <button
+                            className="text-sm text-blue-600 underline"
+                            onClick={() => startEditingPlacement(p)}
+                          >
+                            Edit
+                          </button>
+                        </td>
+                      </>
+                    )}
                   </tr>
+
               
                   {publishingPlacementId === p.id && (
                     <tr>
