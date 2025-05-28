@@ -80,13 +80,6 @@ const RetailerDashboard = () => {
       },
     };
 
-  const handleDeletePlacement = (id) => {
-    const confirmDelete = window.confirm("Are you sure you want to delete this placement?");
-    if (confirmDelete) {
-      setPlacements((prev) => prev.filter((p) => p.id !== id));
-    }
-  };
-  
     setPlacements([...placements, placement]);
   
     // Resetting form
@@ -103,6 +96,13 @@ const RetailerDashboard = () => {
       channel: "",
       styleGuide: null, // ✅ also reset this
     });
+  };
+
+ const handleDeletePlacement = (id) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this placement?");
+    if (confirmDelete) {
+      setPlacements((prev) => prev.filter((p) => p.id !== id));
+    }
   };
 
   return (
