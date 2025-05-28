@@ -78,6 +78,8 @@ const RetailerDashboard = () => {
       cadenceStartDate: "",
       cadencePeriodLength: 7,
       cadenceWeeksOut: 5,
+      channel: "",
+      styleGuide: null,
     });
   };
 
