@@ -415,6 +415,21 @@ const RetailerDashboard = () => {
                       </>
                     ) : (
                       <>
+                        <td className="p-2 border-b">
+                          <input
+                            type="checkbox"
+                            checked={selectedPlacementIds.includes(p.id)}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setSelectedPlacementIds((prev) => [...prev, p.id]);
+                              } else {
+                                setSelectedPlacementIds((prev) =>
+                                  prev.filter((id) => id !== p.id)
+                                );
+                              }
+                            }}
+                          />
+                        </td>
                         <td className="p-2 border-b">{p.name}</td>
                         <td className="p-2 border-b">{p.channel}</td>
                         <td className="p-2 border-b">{p.format}</td>
