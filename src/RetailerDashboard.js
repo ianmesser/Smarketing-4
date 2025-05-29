@@ -1,5 +1,8 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient("https://nfulkzvpzqbqpcsvnple.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5mdWxrenZwenFicXBjc3ZucGxlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg0ODA5NzUsImV4cCI6MjA2NDA1Njk3NX0.u6FCTKBgrEvgUGF1LXI7eHNs9jqda-Go579cQOoNkUw");
 
 const CHANNEL_OPTIONS = ["In-Store", "Site", "Email", "Social"];
 const RetailerDashboard = () => {
@@ -45,6 +48,10 @@ const RetailerDashboard = () => {
   const [publishStartDate, setPublishStartDate] = useState("");
   const [publishWeeks, setPublishWeeks] = useState(5);
 
+useEffect(() => {
+  fetchPlacements();
+}, []);
+  
   const generateAvailability = (placement, cadence) => {
     const availability = [];
     const start = new Date(cadence.startDate);
@@ -69,21 +76,38 @@ const RetailerDashboard = () => {
     return availability;
   };
 
-  const handleAddPlacement = () => {
-    const placement = {
-      id: Date.now(),
-      ...newPlacement,
-      styleGuide: newPlacement.styleGuide, // ✅ This line is important
-      cadenceOverride: {
-        startDate: newPlacement.cadenceStartDate,
-        periodLength: newPlacement.cadencePeriodLength,
-        maxWeeksOut: newPlacement.cadenceWeeksOut,
-      },
-    };
+const fetchPlacements = async () => {
+  const { data, error } = await supabase.from("placements").select("*");
 
-    setPlacements([...placements, placement]);
+  if (error) {
+    console.error("Error fetching placements:", error.message);
+  } else {
+    setPlacements(data);
+  }
+};
+
+  const handleAddPlacement = async () => {
+    const { data, error } = await supabase.from("placements").insert([
+      {
+        retailer_id: "test-retailer-id", // can be a placeholder for now
+        channel: newPlacement.channel,
+        location: newPlacement.name,
+        start_date: newPlacement.cadenceStartDate || "2025-06-01",
+        end_date: "2025-06-07", // you can make this dynamic later
+        price: parseFloat(newPlacement.defaultPrice || 0),
+        style_guide_url: "", // style guide upload later
+        is_booked: false
+      }
+    ]);
   
-    // Resetting form
+    if (error) {
+      console.error("Failed to publish placement:", error.message);
+    } else {
+      console.log("Placement published:", data);
+      fetchPlacements(); // will reload the list once we add this
+    }
+  
+    // Reset form
     setNewPlacement({
       name: "",
       format: "Image",
@@ -94,10 +118,11 @@ const RetailerDashboard = () => {
       cadencePeriodLength: 7,
       cadenceStartDate: "",
       cadenceWeeksOut: 5,
-      channel: "",
-      styleGuide: null, // ✅ also reset this
+      channel: "Site",
+      styleGuide: null
     });
   };
+
 
  const handleDeletePlacement = (id) => {
     const confirmDelete = window.confirm("Are you sure you want to delete this placement?");
