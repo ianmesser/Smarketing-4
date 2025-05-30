@@ -532,59 +532,84 @@ const fetchPlacements = async () => {
                                   alert("Please select a start date.");
                                   return;
                                 }
-                            
+                              
                                 const cadence = {
                                   startDate: publishStartDate,
                                   periodLength: p.cadenceOverride?.periodLength || 7,
                                   maxWeeksOut: publishWeeks,
                                 };
-                            
+                              
                                 const availability = generateAvailability(p, cadence);
-                            
-                                // ⬇️ Upload the style guide to Supabase Storage
-                                let styleGuideUrl = "";
-                                if (p.styleGuide) {
+                              
+                                // ⬇️ Upload style guide to Supabase (if not uploaded yet)
+                                let styleGuideUrl = p.style_guide_url || "";
+                                if (p.styleGuide && !p.style_guide_url) {
                                   const filePath = `${Date.now()}-${p.styleGuide.name}`;
-                            
+                              
                                   const { error: uploadError } = await supabase.storage
                                     .from("style-guides")
                                     .upload(filePath, p.styleGuide);
-                            
+                              
                                   if (uploadError) {
                                     console.error("Upload error:", uploadError.message);
                                     alert("Style guide upload failed.");
                                     return;
                                   }
-                            
+                              
                                   const { data: urlData } = supabase.storage
                                     .from("style-guides")
                                     .getPublicUrl(filePath);
-                            
+                              
                                   styleGuideUrl = urlData?.publicUrl || "";
+                                  p.style_guide_url = styleGuideUrl; // update local state
                                 }
-                            
-                                // ⬇️ Insert the placement with uploaded file URL
-                                const { data, error } = await supabase.from("placements").insert([
-                                  {
-                                    retailer_id: "00000000-0000-4000-8000-000000000000",
-                                    channel: p.channel,
-                                    location: p.name,
-                                    start_date: cadence.startDate,
-                                    end_date: availability[0]?.endDate || cadence.startDate,
-                                    price: parseFloat(p.defaultPrice || 0),
-                                    style_guide_url: styleGuideUrl,
-                                    is_booked: false,
+                              
+                                // ⬇️ Insert placement if it's not already published
+                                if (!p.isPublished) {
+                                  const { data, error } = await supabase.from("placements").insert([
+                                    {
+                                      retailer_id: "00000000-0000-4000-8000-000000000000",
+                                      channel: p.channel,
+                                      location: p.name,
+                                      start_date: cadence.startDate,
+                                      end_date: availability[availability.length - 1].endDate,
+                                      price: parseFloat(p.defaultPrice || 0),
+                                      style_guide_url: styleGuideUrl,
+                                      is_booked: false,
+                                    }
+                                  ]);
+                              
+                                  if (error) {
+                                    console.error("Supabase insert error:", error.message);
+                                    alert("There was a problem publishing to Supabase.");
+                                    return;
+                                  } else {
+                                    console.log("Placement inserted:", data);
+                                    p.isPublished = true; // mark as published to avoid duplicates
                                   }
-                                ]);
-                            
-                                if (error) {
-                                  console.error("Supabase insert error:", error.message);
-                                  alert("There was a problem publishing to Supabase.");
-                                } else {
-                                  console.log("Published to Supabase:", data);
-                                  fetchPlacements?.();
-                                  setAvailabilities((prev) => [...prev, ...availability]);  
                                 }
+                              
+                                // ⬇️ Upload all availability slots
+                                const availabilityData = availability.map((slot) => ({
+                                  placement_id: "TEMP", // optional: link later if you store IDs
+                                  start_date: slot.startDate,
+                                  end_date: slot.endDate,
+                                  total_slots: slot.totalSlots,
+                                  booked_slots: slot.bookedSlots,
+                                }));
+                              
+                                const { error: availError } = await supabase
+                                  .from("availability")
+                                  .insert(availabilityData);
+                              
+                                if (availError) {
+                                  console.error("Availability upload error:", availError.message);
+                                  alert("There was a problem uploading availability.");
+                                  return;
+                                }
+                              
+                                // ✅ Confirm success — but DO NOT clear the row
+                                alert("Placement and availability published!");
                               }}
                             >
                               Confirm
