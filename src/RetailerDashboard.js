@@ -87,58 +87,54 @@ const fetchPlacements = async () => {
 };
 
  const handleAddPlacement = async () => {
-  const placementToSave = {
-    retailer_id: "00000000-0000-4000-8000-000000000000",
-    channel: newPlacement.channel,
-    location: newPlacement.name,
-    start_date: newPlacement.cadenceStartDate || "2025-06-01", // placeholder
-    end_date: "2025-06-07", // placeholder
-    price: parseFloat(newPlacement.defaultPrice || 0),
-    style_guide_url: "", // will be updated later during upload
-    is_booked: false,
-  };
-
-  const { data, error } = await supabase
-    .from("placements")
-    .insert([placementToSave])
-    .select(); // so we get the real ID back
+  const { data, error } = await supabase.from("placements").insert([
+    {
+      retailer_id: "00000000-0000-4000-8000-000000000000", // placeholder ID
+      channel: newPlacement.channel,
+      location: newPlacement.name,
+      start_date: newPlacement.cadenceStartDate || "2025-06-01",
+      end_date: "2025-06-07", // placeholder logic, can be refined
+      price: parseFloat(newPlacement.defaultPrice || 0),
+      style_guide_url: "", // you can enhance this to upload the file
+      is_booked: false
+    }
+  ]);
 
   if (error) {
-    console.error("Placement insert error:", error.message);
-    alert("Failed to save placement.");
+    console.error("Failed to save placement:", error.message);
+    alert("There was a problem saving the placement.");
     return;
   }
 
-  const placementId = data?.[0]?.id;
+  alert("Placement added.");
 
-  // Add the placement to your frontend state
   const placement = {
-    id: Date.now(), // for React key
+    id: Date.now(),
     ...newPlacement,
+    styleGuide: newPlacement.styleGuide,
     cadenceOverride: {
       startDate: newPlacement.cadenceStartDate,
       periodLength: newPlacement.cadencePeriodLength,
       maxWeeksOut: newPlacement.cadenceWeeksOut,
     },
-    supabaseId: placementId,
-    isPublished: false,
+    isPublished: true,
+    supabaseId: data?.[0]?.id
   };
 
   setPlacements((prev) => [...prev, placement]);
 
-  // Reset the form
   setNewPlacement({
     name: "",
     format: "Image",
-    channel: "Site",
     dimensions: "",
     defaultPrice: "",
     defaultConcurrentSlots: 1,
     schedulingMode: "cadence",
-    cadenceStartDate: "",
     cadencePeriodLength: 7,
+    cadenceStartDate: "",
     cadenceWeeksOut: 5,
-    styleGuide: null,
+    channel: "Site",
+    styleGuide: null
   });
 };
 
@@ -609,7 +605,7 @@ const fetchPlacements = async () => {
                                 }
                               
                                 // ✅ Confirm success — but DO NOT clear the row
-                                alert("Placement and availability published!");
+                                alert("Availability published!");
                               }}
                             >
                               Confirm
