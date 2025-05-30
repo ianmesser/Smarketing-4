@@ -531,12 +531,38 @@ setPlacements((prev) => [...prev, placement]);
                                   alert("Please select a start date.");
                                   return;
                                 }
+                            
                                 const cadence = {
                                   startDate: publishStartDate,
                                   periodLength: p.cadenceOverride?.periodLength || 7,
                                   maxWeeksOut: publishWeeks,
                                 };
+                            
                                 const availability = generateAvailability(p, cadence);
+                            
+                                // ⬇️ Upload the style guide to Supabase Storage
+                                let styleGuideUrl = "";
+                                if (p.styleGuide) {
+                                  const filePath = `${Date.now()}-${p.styleGuide.name}`;
+                            
+                                  const { error: uploadError } = await supabase.storage
+                                    .from("style-guides")
+                                    .upload(filePath, p.styleGuide);
+                            
+                                  if (uploadError) {
+                                    console.error("Upload error:", uploadError.message);
+                                    alert("Style guide upload failed.");
+                                    return;
+                                  }
+                            
+                                  const { data: urlData } = supabase.storage
+                                    .from("style-guides")
+                                    .getPublicUrl(filePath);
+                            
+                                  styleGuideUrl = urlData?.publicUrl || "";
+                                }
+                            
+                                // ⬇️ Insert the placement with uploaded file URL
                                 const { data, error } = await supabase.from("placements").insert([
                                   {
                                     retailer_id: "00000000-0000-4000-8000-000000000000",
@@ -545,23 +571,25 @@ setPlacements((prev) => [...prev, placement]);
                                     start_date: cadence.startDate,
                                     end_date: availability[0]?.endDate || cadence.startDate,
                                     price: parseFloat(p.defaultPrice || 0),
-                                    style_guide_url: "", // this will be handled later
+                                    style_guide_url: styleGuideUrl,
                                     is_booked: false,
                                   }
                                 ]);
-                            if (error) {
-                              console.error("Supabase insert error:", error.message);
-                              alert("There was a problem publishing to Supabase.");
-                            } else {
-                              console.log("Published to Supabase:", data);
-                              fetchPlacements?.();
-                              setAvailabilities((prev) => [...prev, ...availability]);
-                              setPublishingPlacementId(null);
-                            }
-                          }}
-                        >
-                          Confirm
-                        </button>
+                            
+                                if (error) {
+                                  console.error("Supabase insert error:", error.message);
+                                  alert("There was a problem publishing to Supabase.");
+                                } else {
+                                  console.log("Published to Supabase:", data);
+                                  fetchPlacements?.();
+                                  setAvailabilities((prev) => [...prev, ...availability]);
+                                  setPublishingPlacementId(null);
+                                }
+                              }}
+                            >
+                              Confirm
+                            </button>
+
               
                             <button
                               className="text-gray-500 underline"
