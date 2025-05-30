@@ -577,8 +577,11 @@ const fetchPlacements = async () => {
                                       style_guide_url: styleGuideUrl,
                                       is_booked: false,
                                     }
-                                  ]);
+                                  ]).select();
                               
+                                  const placementId = data?.[0]?.id;
+                                  p.supabaseId = placementId;
+
                                   if (error) {
                                     console.error("Supabase insert error:", error.message);
                                     alert("There was a problem publishing to Supabase.");
@@ -591,7 +594,7 @@ const fetchPlacements = async () => {
                               
                                 // ⬇️ Upload all availability slots
                                 const availabilityData = availability.map((slot) => ({
-                                  placement_id: "TEMP", // optional: link later if you store IDs
+                                  placement_id: p.supabaseId, // ✅ use the real Supabase placement ID
                                   start_date: slot.startDate,
                                   end_date: slot.endDate,
                                   total_slots: slot.totalSlots,
