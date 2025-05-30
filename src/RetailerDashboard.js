@@ -86,35 +86,36 @@ const fetchPlacements = async () => {
   }
 };
 
-  const handleAddPlacement = () => {
-    const placement = {
-      id: Date.now(), // unique temporary ID
-      ...newPlacement,
-      styleGuide: newPlacement.styleGuide,
-      cadenceOverride: {
-        startDate: newPlacement.cadenceStartDate,
-        periodLength: newPlacement.cadencePeriodLength,
-        maxWeeksOut: newPlacement.cadenceWeeksOut,
-      },
-    };
-
-setPlacements((prev) => [...prev, placement]);
-
-    // Reset form
-    setNewPlacement({
-      name: "",
-      format: "Image",
-      dimensions: "",
-      defaultPrice: "",
-      defaultConcurrentSlots: 1,
-      schedulingMode: "cadence",
-      cadencePeriodLength: 7,
-      cadenceStartDate: "",
-      cadenceWeeksOut: 5,
-      channel: "Site",
-      styleGuide: null
-    });
+ const handleAddPlacement = () => {
+  const placement = {
+    id: Date.now(), // temporary ID for frontend tracking
+    ...newPlacement,
+    styleGuide: newPlacement.styleGuide || null,
+    cadenceOverride: {
+      startDate: newPlacement.cadenceStartDate,
+      periodLength: newPlacement.cadencePeriodLength,
+      maxWeeksOut: newPlacement.cadenceWeeksOut,
+    },
+    isPublished: false, // used to track whether Confirm has run yet
   };
+
+  setPlacements((prev) => [...prev, placement]);
+
+  // ✅ Reset the form after adding
+  setNewPlacement({
+    name: "",
+    format: "Image",
+    channel: "Site",
+    dimensions: "",
+    defaultPrice: "",
+    defaultConcurrentSlots: 1,
+    schedulingMode: "cadence",
+    cadenceStartDate: "",
+    cadencePeriodLength: 7,
+    cadenceWeeksOut: 5,
+    styleGuide: null,
+  });
+};
 
 
  const handleDeletePlacement = (id) => {
