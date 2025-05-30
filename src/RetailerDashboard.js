@@ -126,7 +126,7 @@ setPlacements((prev) => [...prev, placement]);
 
   return (
     <div className="p-8 space-y-10">
-      <h1 className="text-3xl font-bold mb-2">Retailer Dashboard</h1>
+      <h1 className="text-3xl font-bold mb-2"> Dashboard</h1>
 
       <div>
         <h2 className="text-xl font-semibold mb-2">Add New Placement</h2>
@@ -539,7 +539,7 @@ setPlacements((prev) => [...prev, placement]);
                                 const availability = generateAvailability(p, cadence);
                                 const { data, error } = await supabase.from("placements").insert([
                                   {
-                                    retailer_id: "test-retailer-id",
+                                    retailer_id: "00000000-0000-4000-8000-000000000000d",
                                     channel: p.channel,
                                     location: p.name,
                                     start_date: cadence.startDate,
