@@ -81,9 +81,29 @@ const fetchPlacements = async () => {
 
   if (error) {
     console.error("Error fetching placements:", error.message);
-  } else {
-    setPlacements(data);
+    return;
   }
+
+  const formatted = data.map((row) => ({
+    id: Date.now() + Math.random(),  // unique key for React
+    name: row.location,
+    channel: row.channel,
+    format: "Image", // adjust if you store this
+    dimensions: "",  // adjust if needed
+    defaultPrice: row.price,
+    defaultConcurrentSlots: 1,
+    schedulingMode: "cadence",
+    cadenceOverride: {
+      startDate: row.start_date,
+      periodLength: 7,
+      maxWeeksOut: 5
+    },
+    styleGuide: null, // optional — could parse from row.style_guide_url if needed
+    supabaseId: row.id,
+    isPublished: true
+  }));
+
+  setPlacements(formatted);
 };
 
  const handleAddPlacement = async () => {
