@@ -89,27 +89,27 @@ const fetchPlacements = async () => {
  const handleAddPlacement = async () => {
   const { data, error } = await supabase.from("placements").insert([
     {
-      retailer_id: "00000000-0000-4000-8000-000000000000", // placeholder ID
+      retailer_id: "00000000-0000-4000-8000-000000000000",
       channel: newPlacement.channel,
       location: newPlacement.name,
       start_date: newPlacement.cadenceStartDate || "2025-06-01",
-      end_date: "2025-06-07", // placeholder logic, can be refined
+      end_date: "2025-06-07",
       price: parseFloat(newPlacement.defaultPrice || 0),
-      style_guide_url: "", // you can enhance this to upload the file
+      style_guide_url: "",
       is_booked: false
     }
-  ]);
+  ]).select(); // ✅ This ensures we get back the inserted row and its UUID
 
   if (error) {
-    console.error("Failed to save placement:", error.message);
-    alert("There was a problem saving the placement.");
+    console.error("Placement insert error:", error.message);
+    alert("There was a problem saving your placement.");
     return;
   }
 
-  alert("Placement added.");
+  const placementId = data?.[0]?.id;
 
   const placement = {
-    id: Date.now(),
+    id: Date.now(), // used locally in the browser
     ...newPlacement,
     styleGuide: newPlacement.styleGuide,
     cadenceOverride: {
@@ -117,12 +117,15 @@ const fetchPlacements = async () => {
       periodLength: newPlacement.cadencePeriodLength,
       maxWeeksOut: newPlacement.cadenceWeeksOut,
     },
-    isPublished: true,
-    supabaseId: data?.[0]?.id
+    isPublished: true,       // ✅ We already inserted this into Supabase
+    supabaseId: placementId  // ✅ This is the real UUID for availability linking
   };
 
   setPlacements((prev) => [...prev, placement]);
 
+  alert("Placement added successfully.");
+
+  // 🔁 Reset the form
   setNewPlacement({
     name: "",
     format: "Image",
