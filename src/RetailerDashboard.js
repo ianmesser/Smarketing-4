@@ -539,7 +539,7 @@ setPlacements((prev) => [...prev, placement]);
                                 const availability = generateAvailability(p, cadence);
                                 const { data, error } = await supabase.from("placements").insert([
                                   {
-                                    retailer_id: "00000000-0000-4000-8000-000000000000d",
+                                    retailer_id: "00000000-0000-4000-8000-000000000000",
                                     channel: p.channel,
                                     location: p.name,
                                     start_date: cadence.startDate,
