@@ -603,7 +603,7 @@ const fetchPlacements = async () => {
                                   .insert(availabilityData);
                               
                                 if (availError) {
-                                  console.error("Availability upload error:", availError.message);
+                                  console.error("Availability upload error:", availError);
                                   alert("There was a problem uploading availability.");
                                   return;
                                 }
