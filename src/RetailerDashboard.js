@@ -98,6 +98,8 @@ const fetchPlacements = async () => {
       },
     };
 
+setPlacements((prev) => [...prev, placement]);
+
     // Reset form
     setNewPlacement({
       name: "",
