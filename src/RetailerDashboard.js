@@ -86,22 +86,47 @@ const fetchPlacements = async () => {
   }
 };
 
- const handleAddPlacement = () => {
+ const handleAddPlacement = async () => {
+  const placementToSave = {
+    retailer_id: "00000000-0000-4000-8000-000000000000",
+    channel: newPlacement.channel,
+    location: newPlacement.name,
+    start_date: newPlacement.cadenceStartDate || "2025-06-01", // placeholder
+    end_date: "2025-06-07", // placeholder
+    price: parseFloat(newPlacement.defaultPrice || 0),
+    style_guide_url: "", // will be updated later during upload
+    is_booked: false,
+  };
+
+  const { data, error } = await supabase
+    .from("placements")
+    .insert([placementToSave])
+    .select(); // so we get the real ID back
+
+  if (error) {
+    console.error("Placement insert error:", error.message);
+    alert("Failed to save placement.");
+    return;
+  }
+
+  const placementId = data?.[0]?.id;
+
+  // Add the placement to your frontend state
   const placement = {
-    id: Date.now(), // temporary ID for frontend tracking
+    id: Date.now(), // for React key
     ...newPlacement,
-    styleGuide: newPlacement.styleGuide || null,
     cadenceOverride: {
       startDate: newPlacement.cadenceStartDate,
       periodLength: newPlacement.cadencePeriodLength,
       maxWeeksOut: newPlacement.cadenceWeeksOut,
     },
-    isPublished: false, // used to track whether Confirm has run yet
+    supabaseId: placementId,
+    isPublished: false,
   };
 
   setPlacements((prev) => [...prev, placement]);
 
-  // ✅ Reset the form after adding
+  // Reset the form
   setNewPlacement({
     name: "",
     format: "Image",
@@ -562,34 +587,6 @@ const fetchPlacements = async () => {
                               
                                   styleGuideUrl = urlData?.publicUrl || "";
                                   p.style_guide_url = styleGuideUrl; // update local state
-                                }
-                              
-                                // ⬇️ Insert placement if it's not already published
-                                if (!p.isPublished) {
-                                  const { data, error } = await supabase.from("placements").insert([
-                                    {
-                                      retailer_id: "00000000-0000-4000-8000-000000000000",
-                                      channel: p.channel,
-                                      location: p.name,
-                                      start_date: cadence.startDate,
-                                      end_date: availability[availability.length - 1].endDate,
-                                      price: parseFloat(p.defaultPrice || 0),
-                                      style_guide_url: styleGuideUrl,
-                                      is_booked: false,
-                                    }
-                                  ]).select();
-                              
-                                  const placementId = data?.[0]?.id;
-                                  p.supabaseId = placementId;
-
-                                  if (error) {
-                                    console.error("Supabase insert error:", error.message);
-                                    alert("There was a problem publishing to Supabase.");
-                                    return;
-                                  } else {
-                                    console.log("Placement inserted:", data);
-                                    p.isPublished = true; // mark as published to avoid duplicates
-                                  }
                                 }
                               
                                 // ⬇️ Upload all availability slots
