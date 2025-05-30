@@ -86,27 +86,18 @@ const fetchPlacements = async () => {
   }
 };
 
-  const handleAddPlacement = async () => {
-    const { data, error } = await supabase.from("placements").insert([
-      {
-        retailer_id: "test-retailer-id", // can be a placeholder for now
-        channel: newPlacement.channel,
-        location: newPlacement.name,
-        start_date: newPlacement.cadenceStartDate || "2025-06-01",
-        end_date: "2025-06-07", // you can make this dynamic later
-        price: parseFloat(newPlacement.defaultPrice || 0),
-        style_guide_url: "", // style guide upload later
-        is_booked: false
-      }
-    ]);
-  
-    if (error) {
-      console.error("Failed to publish placement:", error.message);
-    } else {
-      console.log("Placement published:", data);
-      fetchPlacements(); // will reload the list once we add this
-    }
-  
+  const handleAddPlacement = () => {
+    const placement = {
+      id: Date.now(),
+      ...newPlacement,
+      styleGuide: newPlacement.styleGuide,
+      cadenceOverride: {
+        startDate: newPlacement.cadenceStartDate,
+        periodLength: newPlacement.cadencePeriodLength,
+        maxWeeksOut: newPlacement.cadenceWeeksOut,
+      },
+    };
+
     // Reset form
     setNewPlacement({
       name: "",
