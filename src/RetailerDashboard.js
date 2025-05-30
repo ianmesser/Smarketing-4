@@ -88,7 +88,7 @@ const fetchPlacements = async () => {
 
   const handleAddPlacement = () => {
     const placement = {
-      id: Date.now(),
+      id: Date.now(), // unique temporary ID
       ...newPlacement,
       styleGuide: newPlacement.styleGuide,
       cadenceOverride: {
