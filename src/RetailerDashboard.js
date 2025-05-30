@@ -582,8 +582,7 @@ setPlacements((prev) => [...prev, placement]);
                                 } else {
                                   console.log("Published to Supabase:", data);
                                   fetchPlacements?.();
-                                  setAvailabilities((prev) => [...prev, ...availability]);
-                                  setPublishingPlacementId(null);
+                                  setAvailabilities((prev) => [...prev, ...availability]);  
                                 }
                               }}
                             >
