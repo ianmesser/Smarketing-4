@@ -524,23 +524,42 @@ const fetchPlacements = async () => {
               
                             <button
                               className="bg-blue-600 text-white px-4 py-2 rounded"
-                              onClick={() => {
+                              onClick={async () => {
                                 if (!publishStartDate) {
                                   alert("Please select a start date.");
                                   return;
                                 }
                                 const cadence = {
                                   startDate: publishStartDate,
-                                  periodLength: p.cadenceOverride.periodLength,
+                                  periodLength: p.cadenceOverride?.periodLength || 7,
                                   maxWeeksOut: publishWeeks,
                                 };
                                 const availability = generateAvailability(p, cadence);
-                                setAvailabilities((prev) => [...prev, ...availability]);
-                                setPublishingPlacementId(null);
-                              }}
-                            >
-                              Confirm
-                            </button>
+                                const { data, error } = await supabase.from("placements").insert([
+                                  {
+                                    retailer_id: "test-retailer-id",
+                                    channel: p.channel,
+                                    location: p.name,
+                                    start_date: cadence.startDate,
+                                    end_date: availability[0]?.endDate || cadence.startDate,
+                                    price: parseFloat(p.defaultPrice || 0),
+                                    style_guide_url: "", // this will be handled later
+                                    is_booked: false,
+                                  }
+                                ]);
+                            if (error) {
+                              console.error("Supabase insert error:", error.message);
+                              alert("There was a problem publishing to Supabase.");
+                            } else {
+                              console.log("Published to Supabase:", data);
+                              fetchPlacements?.();
+                              setAvailabilities((prev) => [...prev, ...availability]);
+                              setPublishingPlacementId(null);
+                            }
+                          }}
+                        >
+                          Confirm
+                        </button>
               
                             <button
                               className="text-gray-500 underline"
