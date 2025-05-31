@@ -98,10 +98,10 @@ const fetchPlacements = async () => {
   }
 
   const formatted = data.map((row) => ({
-    id: Date.now() + Math.random(),  // unique key for React
+    id: Date.now() + Math.random(), // unique key for React
     name: row.location,
     channel: row.channel,
-    format: "Image", // adjust if you store this
+    format: "Image", // adjust if stored
     dimensions: "",  // adjust if needed
     defaultPrice: row.price,
     defaultConcurrentSlots: 1,
@@ -111,10 +111,16 @@ const fetchPlacements = async () => {
       periodLength: 7,
       maxWeeksOut: 5
     },
-    styleGuide: null, // optional — could parse from row.style_guide_url if needed
+    // ✅ Add styleGuide as a display-friendly object if a URL exists
+    styleGuide: row.style_guide_url
+      ? { name: row.style_guide_url.split("/").pop(), url: row.style_guide_url }
+      : null,
+    // ✅ Preserve the actual URL separately for publishing logic
+    style_guide_url: row.style_guide_url,
     supabaseId: row.id,
     isPublished: true
   }));
+
 
   setPlacements(formatted);
 };
