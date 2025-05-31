@@ -665,6 +665,30 @@ const fetchPlacements = async () => {
         )}
       </div>
 
+      <h2 className="text-xl font-semibold mt-6">Published Availability</h2>
+      <table className="w-full table-auto mt-2 border">
+        <thead>
+          <tr className="bg-gray-200">
+            <th className="border px-4 py-2">Placement ID</th>
+            <th className="border px-4 py-2">Start Date</th>
+            <th className="border px-4 py-2">End Date</th>
+            <th className="border px-4 py-2">Total Slots</th>
+            <th className="border px-4 py-2">Booked Slots</th>
+          </tr>
+        </thead>
+        <tbody>
+          {availabilities.map((a) => (
+            <tr key={a.id}>
+              <td className="border px-4 py-2">{a.placement_id}</td>
+              <td className="border px-4 py-2">{a.start_date}</td>
+              <td className="border px-4 py-2">{a.end_date}</td>
+              <td className="border px-4 py-2">{a.total_slots}</td>
+              <td className="border px-4 py-2">{a.booked_slots}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
       {availabilities.length > 0 && (
         <div className="mt-8">
           <h2 className="text-xl font-semibold mb-2">Generated Availability</h2>
