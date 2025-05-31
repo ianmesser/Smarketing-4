@@ -125,8 +125,6 @@ const fetchPlacements = async () => {
       retailer_id: "00000000-0000-4000-8000-000000000000",
       channel: newPlacement.channel,
       location: newPlacement.name,
-      start_date: "2025-06-01", // temporary until scheduling is defined
-      end_date: "2025-06-07",
       price: parseFloat(newPlacement.defaultPrice || 0),
       style_guide_url: "",
       is_booked: false
