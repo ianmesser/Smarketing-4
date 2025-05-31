@@ -102,7 +102,7 @@ const fetchPlacements = async () => {
     name: row.location,
     channel: row.channel,
     format: "Image", // adjust if stored
-    dimensions: "",  // adjust if needed
+    dimensions: row.dimensions || "",
     defaultPrice: row.price,
     defaultConcurrentSlots: 1,
     schedulingMode: "cadence",
@@ -157,7 +157,8 @@ const fetchPlacements = async () => {
       location: newPlacement.name,
       price: parseFloat(newPlacement.defaultPrice || 0),
       style_guide_url: styleGuideUrl,
-      is_booked: false
+      is_booked: false,
+      dimensions: newPlacement.dimensions  // ✅ New line
     }
   ]).select();
 
