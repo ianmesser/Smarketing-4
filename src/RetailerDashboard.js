@@ -18,6 +18,9 @@ const RetailerDashboard = () => {
     cadenceStartDate: "",
     cadencePeriodLength: 7,
     cadenceWeeksOut: 5,
+    customAvailability: [  // 🆕 New field
+    { startDate: "", endDate: ""}
+  ],
     styleGuide: null,
   });
 
@@ -318,6 +321,61 @@ const fetchPlacements = async () => {
               />
             </>
           )}
+
+          {newPlacement.schedulingMode === "custom" && (
+            <div className="col-span-2">
+              <h3 className="font-semibold mb-2">Custom Availability</h3>
+              {newPlacement.customAvailability.map((range, index) => (
+                <div key={index} className="flex items-center gap-4 mb-2">
+                  <input
+                    type="date"
+                    className="border p-2 rounded"
+                    value={range.startDate}
+                    onChange={(e) => {
+                      const updated = [...newPlacement.customAvailability];
+                      updated[index].startDate = e.target.value;
+                      setNewPlacement({ ...newPlacement, customAvailability: updated });
+                    }}
+                  />
+                  <input
+                    type="date"
+                    className="border p-2 rounded"
+                    value={range.endDate}
+                    onChange={(e) => {
+                      const updated = [...newPlacement.customAvailability];
+                      updated[index].endDate = e.target.value;
+                      setNewPlacement({ ...newPlacement, customAvailability: updated });
+                    }}
+                  />
+                  <button
+                    className="text-red-500 underline"
+                    onClick={() => {
+                      const updated = [...newPlacement.customAvailability];
+                      updated.splice(index, 1);
+                      setNewPlacement({ ...newPlacement, customAvailability: updated });
+                    }}
+                  >
+                    Remove
+                  </button>
+                </div>
+              ))}
+              <button
+                className="mt-2 text-blue-600 underline"
+                onClick={() => {
+                  setNewPlacement({
+                    ...newPlacement,
+                    customAvailability: [
+                      ...newPlacement.customAvailability,
+                      { startDate: "", endDate: "" }
+                    ],
+                  });
+                }}
+              >
+                + Add Custom Period
+              </button>
+            </div>
+          )}
+            
           </div>
         </div>
         <button
@@ -595,7 +653,19 @@ const fetchPlacements = async () => {
                                   maxWeeksOut: publishWeeks,
                                 };
                               
-                                const availability = generateAvailability(p, cadence);
+                                let availability = [];
+
+                                if (p.schedulingMode === "custom" && p.customAvailability?.length > 0) {
+                                  availability = p.customAvailability.map((slot) => ({
+                                    placementId: p.supabaseId,
+                                    startDate: slot.startDate,
+                                    endDate: slot.endDate,
+                                    totalSlots: p.defaultConcurrentSlots, // assume 1 by default or pull from UI if you add support later
+                                    bookedSlots: 0
+                                  }));
+                                } else {
+                                  availability = generateAvailability(p, cadence);
+                                }
                               
                                 // ⬇️ Upload style guide to Supabase (if not uploaded yet)
                                 let styleGuideUrl = p.style_guide_url || "";
