@@ -552,7 +552,7 @@ const fetchPlacements = async () => {
                         <td className="p-2 border-b">${p.defaultPrice}</td>
                         <td className="p-2 border-b">{p.defaultConcurrentSlots}</td>
                         <td className="p-2 border-b">
-                          {p.styleGuide ? (
+                          {p.styleGuide instanceof File ? (
                             <a
                               href={URL.createObjectURL(p.styleGuide)}
                               target="_blank"
@@ -568,7 +568,7 @@ const fetchPlacements = async () => {
                               rel="noopener noreferrer"
                               className="text-blue-600 underline"
                             >
-                              View File
+                              View Style Guide
                             </a>
                           ) : (
                             "—"
