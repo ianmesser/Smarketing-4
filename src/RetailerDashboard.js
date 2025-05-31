@@ -608,7 +608,7 @@ const fetchPlacements = async () => {
                                 onChange={(e) => setPublishStartDate(e.target.value)}
                               />
                   
-                              <label className="font-medium">Weeks to Publish:</label>
+                              <label className="font-medium">Periods to Publish:</label>
                               <input
                                 type="number"
                                 min="1"
