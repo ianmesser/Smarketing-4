@@ -688,7 +688,7 @@ const fetchPlacements = async () => {
             </tr>
           ))}
         </tbody>
-      </table>
+        </table>
     
 
 export default RetailerDashboard;
