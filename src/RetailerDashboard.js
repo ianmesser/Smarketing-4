@@ -47,6 +47,7 @@ const RetailerDashboard = () => {
   const [publishSchedulingMode, setPublishSchedulingMode] = useState("cadence");
   const [customStartDate, setCustomStartDate] = useState("");
   const [customEndDate, setCustomEndDate] = useState("");
+  const [publishCadencePeriodLength, setPublishCadencePeriodLength] = useState(7);
   
 useEffect(() => {
   fetchPlacements();
@@ -617,6 +618,17 @@ const fetchPlacements = async () => {
                                   setPublishWeeks(parseInt(e.target.value) || 1)
                                 }
                               />
+
+                              <label className="font-medium">Cadence Period Length (days):</label>
+                              <input
+                                type="number"
+                                min="1"
+                                className="border p-2 rounded w-20"
+                                value={publishCadencePeriodLength}
+                                onChange={(e) =>
+                                  setPublishCadencePeriodLength(parseInt(e.target.value) || 1)
+                                }
+                              />    
                             </div>
                           )}
                           
@@ -653,7 +665,7 @@ const fetchPlacements = async () => {
                   
                                 const cadence = {
                                   startDate: publishStartDate,
-                                  periodLength: p.cadenceOverride?.periodLength || 7,
+                                  periodLength: publishCadencePeriodLength,
                                   maxWeeksOut: publishWeeks,
                                 };
                   
