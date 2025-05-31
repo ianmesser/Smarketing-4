@@ -43,6 +43,7 @@ const RetailerDashboard = () => {
   const [publishingPlacementId, setPublishingPlacementId] = useState(null);
   const [publishStartDate, setPublishStartDate] = useState("");
   const [publishWeeks, setPublishWeeks] = useState(5);
+  const [publishSchedulingMode, setPublishSchedulingMode] = useState("cadence");
 
 useEffect(() => {
   fetchPlacements();
@@ -578,105 +579,120 @@ const fetchPlacements = async () => {
                     <tr>
                       <td colSpan="7" className="bg-gray-50 p-4">
                         <div className="flex flex-col gap-4">
+                  
+                          {/* 1️⃣ Scheduling mode selector */}
                           <div className="flex items-center gap-4">
-                            <label className="font-medium">Start Date:</label>
-                            <input
-                              type="date"
+                            <label className="font-medium">Scheduling Mode:</label>
+                            <select
                               className="border p-2 rounded"
-                              value={publishStartDate}
-                              onChange={(e) => setPublishStartDate(e.target.value)}
-                            />
-              
-                            <label className="font-medium">Weeks to Publish:</label>
-                            <input
-                              type="number"
-                              min="1"
-                              className="border p-2 rounded w-20"
-                              value={publishWeeks}
-                              onChange={(e) =>
-                                setPublishWeeks(parseInt(e.target.value) || 1)
-                              }
-                            />
-              
+                              value={publishSchedulingMode}
+                              onChange={(e) => setPublishSchedulingMode(e.target.value)}
+                            >
+                              <option value="cadence">Cadence-based</option>
+                              <option value="custom">Custom-dated</option>
+                            </select>
+                          </div>
+                  
+                          {/* 2️⃣ Cadence inputs — shown only if cadence is selected */}
+                          {publishSchedulingMode === "cadence" && (
+                            <div className="flex items-center gap-4">
+                              <label className="font-medium">Start Date:</label>
+                              <input
+                                type="date"
+                                className="border p-2 rounded"
+                                value={publishStartDate}
+                                onChange={(e) => setPublishStartDate(e.target.value)}
+                              />
+                  
+                              <label className="font-medium">Weeks to Publish:</label>
+                              <input
+                                type="number"
+                                min="1"
+                                className="border p-2 rounded w-20"
+                                value={publishWeeks}
+                                onChange={(e) =>
+                                  setPublishWeeks(parseInt(e.target.value) || 1)
+                                }
+                              />
+                            </div>
+                          )}
+                  
+                          {/* 3️⃣ Confirm + Cancel buttons */}
+                          <div className="flex items-center gap-4">
                             <button
                               className="bg-blue-600 text-white px-4 py-2 rounded"
                               onClick={async () => {
-                                if (!publishStartDate) {
+                                if (publishSchedulingMode === "cadence" && !publishStartDate) {
                                   alert("Please select a start date.");
                                   return;
                                 }
-                              
+                  
                                 const cadence = {
                                   startDate: publishStartDate,
                                   periodLength: p.cadenceOverride?.periodLength || 7,
                                   maxWeeksOut: publishWeeks,
                                 };
-                              
+                  
                                 let availability = [];
-
-                                if (p.schedulingMode === "custom" && p.customAvailability?.length > 0) {
+                  
+                                if (publishSchedulingMode === "custom" && p.customAvailability?.length > 0) {
                                   availability = p.customAvailability.map((slot) => ({
                                     placementId: p.supabaseId,
                                     startDate: slot.startDate,
                                     endDate: slot.endDate,
-                                    totalSlots: p.defaultConcurrentSlots, // assume 1 by default or pull from UI if you add support later
+                                    totalSlots: p.defaultConcurrentSlots,
                                     bookedSlots: 0
                                   }));
                                 } else {
                                   availability = generateAvailability(p, cadence);
                                 }
-                              
-                                // ⬇️ Upload style guide to Supabase (if not uploaded yet)
+                  
                                 let styleGuideUrl = p.style_guide_url || "";
                                 if (p.styleGuide && !p.style_guide_url) {
                                   const filePath = `${Date.now()}-${p.styleGuide.name}`;
-                              
                                   const { error: uploadError } = await supabase.storage
                                     .from("style-guides")
                                     .upload(filePath, p.styleGuide);
-                              
+                  
                                   if (uploadError) {
                                     console.error("Upload error:", uploadError.message);
                                     alert("Style guide upload failed.");
                                     return;
                                   }
-                              
+                  
                                   const { data: urlData } = supabase.storage
                                     .from("style-guides")
                                     .getPublicUrl(filePath);
-                              
+                  
                                   styleGuideUrl = urlData?.publicUrl || "";
-                                  p.style_guide_url = styleGuideUrl; // update local state
+                                  p.style_guide_url = styleGuideUrl;
                                 }
-                              
-                                // ⬇️ Upload all availability slots
+                  
                                 const availabilityData = availability.map((slot) => ({
-                                  placement_id: p.supabaseId, // ✅ use the real Supabase placement ID
+                                  placement_id: p.supabaseId,
                                   start_date: slot.startDate,
                                   end_date: slot.endDate,
                                   total_slots: slot.totalSlots,
                                   booked_slots: slot.bookedSlots,
                                 }));
-                              
+                  
                                 const { error: availError } = await supabase
                                   .from("availability")
                                   .insert(availabilityData);
-                              
+                  
                                 if (availError) {
                                   console.error("Availability upload error:", availError);
                                   alert("There was a problem uploading availability.");
                                   return;
                                 }
-                                
-                                // ✅ Confirm success AND refresh availability list
+                  
                                 alert("Availability published!");
-                                await fetchAvailabilities(); // 👈 this pulls updated availability from Supabase
+                                await fetchAvailabilities();
                               }}
                             >
                               Confirm
                             </button>
-
-              
+                  
                             <button
                               className="text-gray-500 underline"
                               onClick={() => setPublishingPlacementId(null)}
