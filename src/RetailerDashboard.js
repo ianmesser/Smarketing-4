@@ -50,7 +50,18 @@ const RetailerDashboard = () => {
 
 useEffect(() => {
   fetchPlacements();
+  fetchAvailabilities();
 }, []);
+
+  const fetchAvailabilities = async () => {
+    const { data, error } = await supabase.from("availability").select("*");
+  
+    if (error) {
+      console.error("Error fetching availabilities:", error.message);
+    } else {
+      setAvailabilities(data); // this updates the component with what’s in Supabase
+    }
+  };
   
   const generateAvailability = (placement, cadence) => {
     const availability = [];
@@ -626,9 +637,10 @@ const fetchPlacements = async () => {
                                   alert("There was a problem uploading availability.");
                                   return;
                                 }
-                              
-                                // ✅ Confirm success — but DO NOT clear the row
+                                
+                                // ✅ Confirm success AND refresh availability list
                                 alert("Availability published!");
+                                await fetchAvailabilities(); // 👈 this pulls updated availability from Supabase
                               }}
                             >
                               Confirm
