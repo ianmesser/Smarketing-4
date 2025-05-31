@@ -717,8 +717,7 @@ const fetchPlacements = async () => {
                   
                                 let styleGuideUrl = "";
 
-                                if (p.styleGuide && !p.style_guide_url && p.styleGuide instanceof File) {
-                                  // 🆕 New file exists, upload it
+                                if (p.styleGuide instanceof File && !p.style_guide_url) {
                                   const filePath = `${Date.now()}-${p.styleGuide.name}`;
                                   const { error: uploadError } = await supabase.storage
                                     .from("style-guides")
