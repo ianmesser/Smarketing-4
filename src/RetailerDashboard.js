@@ -690,35 +690,4 @@ const fetchPlacements = async () => {
         </tbody>
       </table>
 
-      {availabilities.length > 0 && (
-        <div className="mt-8">
-          <h2 className="text-xl font-semibold mb-2">Generated Availability</h2>
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-gray-100">
-                <th className="p-2 border-b">Placement</th>
-                <th className="p-2 border-b">Start Date</th>
-                <th className="p-2 border-b">End Date</th>
-                <th className="p-2 border-b">Total Slots</th>
-                <th className="p-2 border-b">Booked Slots</th>
-              </tr>
-            </thead>
-            <tbody>
-              {availabilities.map((slot, i) => (
-                <tr key={i} className="hover:bg-gray-50">
-                  <td className="p-2 border-b">{slot.slotName}</td>
-                  <td className="p-2 border-b">{slot.startDate}</td>
-                  <td className="p-2 border-b">{slot.endDate}</td>
-                  <td className="p-2 border-b">{slot.totalSlots}</td>
-                  <td className="p-2 border-b">{slot.bookedSlots}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-    </div>
-  );
-};
-
 export default RetailerDashboard;
