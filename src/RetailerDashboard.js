@@ -52,6 +52,7 @@ useEffect(() => {
   fetchPlacements();
   fetchAvailabilities();
 }, []);
+ console.log("availabilities from Supabase:", availabilities); 
 
   const fetchAvailabilities = async () => {
     const { data, error } = await supabase.from("availability").select("*");
