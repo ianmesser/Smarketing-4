@@ -714,7 +714,7 @@ const fetchPlacements = async () => {
                                   
                                   if (updateError) {
                                     console.error("Failed to update placement with style guide URL:", updateError.message);
-                                }
+                                  }
                   
                                 const availabilityData = availability.map((slot) => ({
                                   placement_id: p.supabaseId,
