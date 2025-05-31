@@ -737,9 +737,7 @@ const fetchPlacements = async () => {
                                 alert("Availability published!");
                                 await fetchAvailabilities();
                               }}
-                            >
-                              Confirm
-                            </button>
+                            >Confirm</button>
                   
                             <button
                               className="text-gray-500 underline"
