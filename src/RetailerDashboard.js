@@ -706,6 +706,14 @@ const fetchPlacements = async () => {
                   
                                   styleGuideUrl = urlData?.publicUrl || "";
                                   p.style_guide_url = styleGuideUrl;
+
+                                  const { error: updateError } = await supabase
+                                    .from("placements")
+                                    .update({ style_guide_url: styleGuideUrl })
+                                    .eq("id", p.supabaseId);
+                                  
+                                  if (updateError) {
+                                    console.error("Failed to update placement with style guide URL:", updateError.message);
                                 }
                   
                                 const availabilityData = availability.map((slot) => ({
