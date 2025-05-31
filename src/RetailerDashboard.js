@@ -581,7 +581,7 @@ const fetchPlacements = async () => {
                             onClick={() => {
                               setPublishingPlacementId(p.id);
                               setPublishStartDate("");
-                              setPublishWeeks(5);
+                              setPublishWeeks(1);
                             }}
                           >
                             Publish Availability
