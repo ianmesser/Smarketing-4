@@ -717,7 +717,8 @@ const fetchPlacements = async () => {
                   
                                 let styleGuideUrl = "";
 
-                                if (p.styleGuide instanceof File && !p.style_guide_url) {
+                                // 1️⃣ If there's a new File to upload
+                                if (p.styleGuide instanceof File) {
                                   const filePath = `${Date.now()}-${p.styleGuide.name}`;
                                   const { error: uploadError } = await supabase.storage
                                     .from("style-guides")
@@ -745,26 +746,10 @@ const fetchPlacements = async () => {
                                     console.error("Failed to update placement with style guide URL:", updateError.message);
                                   }
                                 
+                                // 2️⃣ Otherwise, use existing URL (after refresh, or if not a File)
                                 } else if (p.style_guide_url) {
-                                  // ✅ No new file, use stored URL from Supabase
                                   styleGuideUrl = p.style_guide_url;
                                 }
-                  
-                                  const { data: urlData } = supabase.storage
-                                    .from("style-guides")
-                                    .getPublicUrl(filePath);
-                  
-                                  styleGuideUrl = urlData?.publicUrl || "";
-                                  p.style_guide_url = styleGuideUrl;
-
-                                  const { error: updateError } = await supabase
-                                    .from("placements")
-                                    .update({ style_guide_url: styleGuideUrl })
-                                    .eq("id", p.supabaseId);
-                                  
-                                  if (updateError) {
-                                    console.error("Failed to update placement with style guide URL:", updateError.message);
-                                  }
                   
                                 const availabilityData = availability.map((slot) => ({
                                   placement_id: p.supabaseId,
