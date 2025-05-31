@@ -43,7 +43,7 @@ const RetailerDashboard = () => {
   const [availabilities, setAvailabilities] = useState([]);
   const [publishingPlacementId, setPublishingPlacementId] = useState(null);
   const [publishStartDate, setPublishStartDate] = useState("");
-  const [publishWeeks, setPublishWeeks] = useState(5);
+  const [publishWeeks, setPublishWeeks] = useState(1);
   const [publishSchedulingMode, setPublishSchedulingMode] = useState("cadence");
   const [customStartDate, setCustomStartDate] = useState("");
   const [customEndDate, setCustomEndDate] = useState("");
