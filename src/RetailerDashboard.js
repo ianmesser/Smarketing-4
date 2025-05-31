@@ -737,7 +737,7 @@ const fetchPlacements = async () => {
                                 alert("Availability published!");
                                 await fetchAvailabilities();
                                 }}
-                                      }>
+                                      >
                                   Confirm
                                 </button>
                   
