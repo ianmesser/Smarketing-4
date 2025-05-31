@@ -799,7 +799,11 @@ const fetchPlacements = async () => {
       <table className="w-full table-auto mt-2 border">
         <thead>
           <tr className="bg-gray-200">
-            <th className="border px-4 py-2">Placement ID</th>
+            <th className="border px-4 py-2">Name</th>
+            <th className="border px-4 py-2">Channel</th>
+            <th className="border px-4 py-2">Format</th>
+            <th className="border px-4 py-2">Dimensions</th>
+            <th className="border px-4 py-2">Price</th>
             <th className="border px-4 py-2">Start Date</th>
             <th className="border px-4 py-2">End Date</th>
             <th className="border px-4 py-2">Total Slots</th>
@@ -807,15 +811,23 @@ const fetchPlacements = async () => {
           </tr>
         </thead>
         <tbody>
-          {availabilities.map((slot) => (
-            <tr key={slot.id} className="hover:bg-gray-50">
-              <td className="p-2 border-b">{slot.placement_id}</td>
-              <td className="p-2 border-b">{slot.start_date}</td>
-              <td className="p-2 border-b">{slot.end_date}</td>
-              <td className="p-2 border-b">{slot.total_slots}</td>
-              <td className="p-2 border-b">{slot.booked_slots}</td>
-            </tr>
-          ))}
+          {availabilities.map((slot) => {
+            const placement = placements.find((p) => p.supabaseId === slot.placement_id);
+        
+            return (
+              <tr key={slot.id} className="hover:bg-gray-50">
+                <td className="p-2 border-b">{placement?.name || "—"}</td>
+                <td className="p-2 border-b">{placement?.channel || "—"}</td>
+                <td className="p-2 border-b">{placement?.format || "—"}</td>
+                <td className="p-2 border-b">{placement?.dimensions || "—"}</td>
+                <td className="p-2 border-b">${placement?.defaultPrice || "—"}</td>
+                <td className="p-2 border-b">{slot.start_date}</td>
+                <td className="p-2 border-b">{slot.end_date}</td>
+                <td className="p-2 border-b">{slot.total_slots}</td>
+                <td className="p-2 border-b">{slot.booked_slots}</td>
+              </tr>
+            );
+          })}
         </tbody>
         </table>
       </div>
