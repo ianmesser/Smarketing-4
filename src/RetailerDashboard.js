@@ -20,7 +20,8 @@ const RetailerDashboard = () => {
   const [selectedPlacementIds, setSelectedPlacementIds] = useState([]);
   const [editingPlacement, setEditingPlacement] = useState(null);
   const [editedPlacement, setEditedPlacement] = useState(null);
-  
+    
+
   const startEditingPlacement = (placement) => {
     setEditingPlacement(placement.id);
     setEditedPlacement({ ...placement });
@@ -44,7 +45,9 @@ const RetailerDashboard = () => {
   const [publishStartDate, setPublishStartDate] = useState("");
   const [publishWeeks, setPublishWeeks] = useState(5);
   const [publishSchedulingMode, setPublishSchedulingMode] = useState("cadence");
-
+  const [customStartDate, setCustomStartDate] = useState("");
+  const [customEndDate, setCustomEndDate] = useState("");
+  
 useEffect(() => {
   fetchPlacements();
   fetchAvailabilities();
@@ -616,7 +619,28 @@ const fetchPlacements = async () => {
                               />
                             </div>
                           )}
-                  
+                          
+                          {/* 2️⃣ Custom inputs — shown only if custom is selected */}
+                          {publishSchedulingMode === "custom" && (
+                            <div className="flex items-center gap-4">
+                              <label className="font-medium">Start Date:</label>
+                              <input
+                                type="date"
+                                className="border p-2 rounded"
+                                value={customStartDate}
+                                onChange={(e) => setCustomStartDate(e.target.value)}
+                              />
+                          
+                              <label className="font-medium">End Date:</label>
+                              <input
+                                type="date"
+                                className="border p-2 rounded"
+                                value={customEndDate}
+                                onChange={(e) => setCustomEndDate(e.target.value)}
+                              />
+                            </div>
+                          )}
+
                           {/* 3️⃣ Confirm + Cancel buttons */}
                           <div className="flex items-center gap-4">
                             <button
@@ -635,14 +659,21 @@ const fetchPlacements = async () => {
                   
                                 let availability = [];
                   
-                                if (publishSchedulingMode === "custom" && p.customAvailability?.length > 0) {
-                                  availability = p.customAvailability.map((slot) => ({
-                                    placementId: p.supabaseId,
-                                    startDate: slot.startDate,
-                                    endDate: slot.endDate,
-                                    totalSlots: p.defaultConcurrentSlots,
-                                    bookedSlots: 0
-                                  }));
+                                if (publishSchedulingMode === "custom") {
+                                  if (!customStartDate || !customEndDate) {
+                                    alert("Please select both custom start and end dates.");
+                                    return;
+                                  }
+                                
+                                  availability = [
+                                    {
+                                      placementId: p.supabaseId,
+                                      startDate: customStartDate,
+                                      endDate: customEndDate,
+                                      totalSlots: p.defaultConcurrentSlots,
+                                      bookedSlots: 0,
+                                    }
+                                  ];
                                 } else {
                                   availability = generateAvailability(p, cadence);
                                 }
