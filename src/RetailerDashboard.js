@@ -394,7 +394,6 @@ const fetchPlacements = async () => {
                 <th className="p-2 border-b">Dimensions</th>
                 <th className="p-2 border-b">Price</th>
                 <th className="p-2 border-b">Slots</th>
-                <th className="p-2 border-b">Scheduling</th>
                 <th className="p-2 border-b">Style Guide</th>
                 <th className="p-2 border-b">Actions</th>
               </tr>
@@ -495,7 +494,6 @@ const fetchPlacements = async () => {
                             }
                           />
                         </td>
-                        <td className="p-2 border-b">{editedPlacement.schedulingMode}</td>
                         <td className="p-2 border-b">—</td>
                         <td className="p-2 border-b">
                           <button
@@ -535,7 +533,6 @@ const fetchPlacements = async () => {
                         <td className="p-2 border-b">{p.dimensions}</td>
                         <td className="p-2 border-b">${p.defaultPrice}</td>
                         <td className="p-2 border-b">{p.defaultConcurrentSlots}</td>
-                        <td className="p-2 border-b capitalize">{p.schedulingMode}</td>
                         <td className="p-2 border-b">
                           {p.styleGuide ? (
                             <a
@@ -581,7 +578,7 @@ const fetchPlacements = async () => {
               
                   {publishingPlacementId === p.id && (
                     <tr>
-                      <td colSpan="7" className="bg-gray-50 p-4">
+                      <td colSpan="6" className="bg-gray-50 p-4">
                         <div className="flex flex-col gap-4">
                   
                           {/* 1️⃣ Scheduling mode selector */}
