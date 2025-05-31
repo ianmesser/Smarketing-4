@@ -14,13 +14,6 @@ const RetailerDashboard = () => {
     dimensions: "",
     defaultPrice: "",
     defaultConcurrentSlots: 1,
-    schedulingMode: "cadence",
-    cadenceStartDate: "",
-    cadencePeriodLength: 7,
-    cadenceWeeksOut: 5,
-    customAvailability: [  // 🆕 New field
-    { startDate: "", endDate: ""}
-  ],
     styleGuide: null,
   });
 
@@ -127,7 +120,7 @@ const fetchPlacements = async () => {
       retailer_id: "00000000-0000-4000-8000-000000000000",
       channel: newPlacement.channel,
       location: newPlacement.name,
-      start_date: newPlacement.cadenceStartDate || "2025-06-01",
+      start_date: "2025-06-01", // temporary until scheduling is defined
       end_date: "2025-06-07",
       price: parseFloat(newPlacement.defaultPrice || 0),
       style_guide_url: "",
@@ -272,19 +265,6 @@ const fetchPlacements = async () => {
             />
           </div>
           <div>
-            <label className="block font-medium mb-1">Scheduling Mode</label>
-            <select
-              className="border p-2 rounded w-full"
-              value={newPlacement.schedulingMode}
-              onChange={(e) =>
-                setNewPlacement({ ...newPlacement, schedulingMode: e.target.value })
-              }
-            >
-              <option value="cadence">Cadence-based</option>
-              <option value="custom">Custom-dated</option>
-            </select>
-          </div>
-          <div>
             <label className="block font-medium mb-1">Upload Style Guide</label>
             <input
               type="file"
@@ -298,28 +278,7 @@ const fetchPlacements = async () => {
               }
             />
           </div>
-
-          <div className="col-span-2 mt-4">
-            {newPlacement.schedulingMode === "cadence" && (
-              <h3 className="font-semibold mb-2">Cadence Settings</h3>
-            )}
-          </div>
           <div>
-           {newPlacement.schedulingMode === "cadence" && (
-            <>
-              <label className="font-medium mt-2">Period Length (in days)</label>
-              <input
-                type="number"
-                className="border p-2 rounded"
-                value={newPlacement.cadencePeriodLength}
-                onChange={(e) =>
-                  setNewPlacement({
-                    ...newPlacement,
-                    cadencePeriodLength: parseInt(e.target.value) || 7,
-                  })
-                }
-              />
-            </>
           )}
 
           {newPlacement.schedulingMode === "custom" && (
