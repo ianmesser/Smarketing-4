@@ -303,7 +303,7 @@ const fetchPlacements = async () => {
             />
           </div>
           <div>
-          )}
+          
 
           {newPlacement.schedulingMode === "custom" && (
             <div className="col-span-2">
