@@ -777,7 +777,7 @@ const fetchPlacements = async () => {
                                 await fetchAvailabilities();
                                 setPublishingPlacementId(null); // 👈 this hides the date picker sectio  
                                 }}
-                                      }>
+                                      >
                                   Confirm
                                 </button>
                   
