@@ -554,16 +554,21 @@ const fetchPlacements = async () => {
                         <td className="p-2 border-b">
                           {p.styleGuide ? (
                             <a
-                              href={
-                                p.styleGuide.url
-                                  ? p.styleGuide.url
-                                  : URL.createObjectURL(p.styleGuide)
-                              }
+                              href={URL.createObjectURL(p.styleGuide)}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="text-blue-600 underline"
                             >
-                              {p.styleGuide.name || "View Style Guide"}
+                              {p.styleGuide.name}
+                            </a>
+                          ) : p.style_guide_url ? (
+                            <a
+                              href={p.style_guide_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-600 underline"
+                            >
+                              View File
                             </a>
                           ) : (
                             "—"
@@ -709,8 +714,10 @@ const fetchPlacements = async () => {
                                   availability = generateAvailability(p, cadence);
                                 }
                   
-                                let styleGuideUrl = p.style_guide_url || "";
+                                let styleGuideUrl = "";
+
                                 if (p.styleGuide && !p.style_guide_url && p.styleGuide instanceof File) {
+                                  // 🆕 New file exists, upload it
                                   const filePath = `${Date.now()}-${p.styleGuide.name}`;
                                   const { error: uploadError } = await supabase.storage
                                     .from("style-guides")
@@ -737,6 +744,10 @@ const fetchPlacements = async () => {
                                   if (updateError) {
                                     console.error("Failed to update placement with style guide URL:", updateError.message);
                                   }
+                                
+                                } else if (p.style_guide_url) {
+                                  // ✅ No new file, use stored URL from Supabase
+                                  styleGuideUrl = p.style_guide_url;
                                 }
                   
                                   const { data: urlData } = supabase.storage
