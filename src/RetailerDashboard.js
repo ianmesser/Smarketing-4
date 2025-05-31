@@ -120,16 +120,40 @@ const fetchPlacements = async () => {
 };
 
  const handleAddPlacement = async () => {
+  let styleGuideUrl = "";
+
+  // ⬆️ Upload style guide to Supabase Storage FIRST
+  if (newPlacement.styleGuide) {
+    const filePath = `${Date.now()}-${newPlacement.styleGuide.name}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from("style-guides")
+      .upload(filePath, newPlacement.styleGuide);
+
+    if (uploadError) {
+      console.error("Style guide upload error:", uploadError.message);
+      alert("Style guide upload failed.");
+      return;
+    }
+
+    const { data: urlData } = supabase.storage
+      .from("style-guides")
+      .getPublicUrl(filePath);
+
+    styleGuideUrl = urlData?.publicUrl || "";
+  }
+
+  // ⬇️ Then insert the placement with the style_guide_url
   const { data, error } = await supabase.from("placements").insert([
     {
       retailer_id: "00000000-0000-4000-8000-000000000000",
       channel: newPlacement.channel,
       location: newPlacement.name,
       price: parseFloat(newPlacement.defaultPrice || 0),
-      style_guide_url: "",
+      style_guide_url: styleGuideUrl,
       is_booked: false
     }
-  ]).select(); // ✅ This ensures we get back the inserted row and its UUID
+  ]).select();
 
   if (error) {
     console.error("Placement insert error:", error.message);
@@ -140,33 +164,23 @@ const fetchPlacements = async () => {
   const placementId = data?.[0]?.id;
 
   const placement = {
-    id: Date.now(), // used locally in the browser
+    id: Date.now(),
     ...newPlacement,
     styleGuide: newPlacement.styleGuide,
-    cadenceOverride: {
-      startDate: newPlacement.cadenceStartDate,
-      periodLength: newPlacement.cadencePeriodLength,
-      maxWeeksOut: newPlacement.cadenceWeeksOut,
-    },
-    isPublished: true,       // ✅ We already inserted this into Supabase
-    supabaseId: placementId  // ✅ This is the real UUID for availability linking
+    supabaseId: placementId,
+    isPublished: true,
   };
 
   setPlacements((prev) => [...prev, placement]);
 
   alert("Placement added successfully.");
 
-  // 🔁 Reset the form
   setNewPlacement({
     name: "",
     format: "Image",
     dimensions: "",
     defaultPrice: "",
     defaultConcurrentSlots: 1,
-    schedulingMode: "cadence",
-    cadencePeriodLength: 7,
-    cadenceStartDate: "",
-    cadenceWeeksOut: 5,
     channel: "Site",
     styleGuide: null
   });
