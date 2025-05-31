@@ -677,13 +677,13 @@ const fetchPlacements = async () => {
           </tr>
         </thead>
         <tbody>
-          {availabilities.map((a) => (
-            <tr key={a.id}>
-              <td className="border px-4 py-2">{a.placement_id}</td>
-              <td className="border px-4 py-2">{a.start_date}</td>
-              <td className="border px-4 py-2">{a.end_date}</td>
-              <td className="border px-4 py-2">{a.total_slots}</td>
-              <td className="border px-4 py-2">{a.booked_slots}</td>
+          {availabilities.map((slot) => (
+            <tr key={slot.id} className="hover:bg-gray-50">
+              <td className="p-2 border-b">{slot.placement_id}</td>
+              <td className="p-2 border-b">{slot.start_date}</td>
+              <td className="p-2 border-b">{slot.end_date}</td>
+              <td className="p-2 border-b">{slot.total_slots}</td>
+              <td className="p-2 border-b">{slot.booked_slots}</td>
             </tr>
           ))}
         </tbody>
