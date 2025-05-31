@@ -710,17 +710,34 @@ const fetchPlacements = async () => {
                                 }
                   
                                 let styleGuideUrl = p.style_guide_url || "";
-                                if (p.styleGuide && !p.style_guide_url) {
+                                if (p.styleGuide && !p.style_guide_url && p.styleGuide instanceof File) {
                                   const filePath = `${Date.now()}-${p.styleGuide.name}`;
                                   const { error: uploadError } = await supabase.storage
                                     .from("style-guides")
                                     .upload(filePath, p.styleGuide);
-                  
+                                
                                   if (uploadError) {
                                     console.error("Upload error:", uploadError.message);
                                     alert("Style guide upload failed.");
                                     return;
                                   }
+                                
+                                  const { data: urlData } = supabase.storage
+                                    .from("style-guides")
+                                    .getPublicUrl(filePath);
+                                
+                                  styleGuideUrl = urlData?.publicUrl || "";
+                                  p.style_guide_url = styleGuideUrl;
+                                
+                                  const { error: updateError } = await supabase
+                                    .from("placements")
+                                    .update({ style_guide_url: styleGuideUrl })
+                                    .eq("id", p.supabaseId);
+                                
+                                  if (updateError) {
+                                    console.error("Failed to update placement with style guide URL:", updateError.message);
+                                  }
+                                }
                   
                                   const { data: urlData } = supabase.storage
                                     .from("style-guides")
