@@ -80,40 +80,66 @@ const VendorPlacements = () => {
   };
 
   const addToCart = (availability) => {
+    const openSlots = availability.total_slots - availability.booked_slots;
+    
+    if (openSlots <= 0) {
+      alert("This availability is fully booked.");
+      return;
+    }
+  
     if (!cart.find((item) => item.availabilityId === availability.availabilityId)) {
       setCart([...cart, availability]);
     }
   };
 
+
   const checkout = async () => {
-    for (const placement of cart) {
-      // Create purchase record
-      const { error: insertError } = await supabase.from("purchases").insert([
-        {
-          vendor_id: supabase.auth.getUser().data.user.id,
-          availability_id: placement.availabilityId, // not placement.id anymore
-        },
-      ]);
+    for (const availability of cart) {
+      // ✅ Step 1: Re-fetch latest availability record from Supabase
+      const { data: fresh, error: fetchError } = await supabase
+        .from("availability")
+        .select("total_slots, booked_slots")
+        .eq("id", availability.availabilityId)
+        .single();
   
-      if (insertError) {
-        console.error("Checkout failed for:", placement.availabilityId, insertError.message);
+      if (fetchError || !fresh) {
+        console.error("Failed to fetch availability:", fetchError?.message);
         continue;
       }
   
-      // Increment booked_slots by 1
-      const { error: updateError } = await supabase.rpc("increment_booked_slots", {
-        avail_id: placement.availabilityId,
-        increment_by: 1,
-      });
+      const openSlots = fresh.total_slots - fresh.booked_slots;
+      if (openSlots <= 0) {
+        alert(`Availability for ${availability.location} is already fully booked.`);
+        continue;
+      }
+  
+      // ✅ Step 2: Insert purchase
+      const { error: insertError } = await supabase.from("purchases").insert([
+        {
+          vendor_id: supabase.auth.getUser().data.user.id,
+          availability_id: availability.availabilityId,
+        },
+      ]);
+      if (insertError) {
+        console.error("Checkout failed for:", availability.availabilityId, insertError.message);
+        continue;
+      }
+  
+      // ✅ Step 3: Increment booked_slots in availability
+      const { error: updateError } = await supabase
+        .from("availability")
+        .update({ booked_slots: fresh.booked_slots + 1 })
+        .eq("id", availability.availabilityId);
   
       if (updateError) {
-        console.error("Failed to increment booked slots:", updateError.message);
+        console.error("Failed to update availability slot:", updateError.message);
+        continue;
       }
     }
   
     alert("Checkout complete!");
     setCart([]);
-    fetchPlacements();
+    fetchPlacements(); // refresh UI
   };
   
   return (
