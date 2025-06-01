@@ -30,24 +30,30 @@ const VendorPlacements = () => {
           channel,
           price,
           style_guide_url,
-          is_booked
+          format,
+          dimensions
         )
-      `)
-      .gte("booked_slots", 0) // just in case
-      .filter("booked_slots", "lt", "total_slots"); // 👈 filters out fully booked
+      `);
   
     if (error) {
-      console.error("Error fetching availability:", error);
+      console.error("Error fetching joined availability:", error);
       return;
     }
   
-    const formatted = data.map((record) => ({
+    // ✅ Filter out fully booked slots
+    const filtered = data.filter((record) => {
+      const openSlots = record.total_slots - record.booked_slots;
+      return openSlots > 0;
+    });
+  
+    // ✅ Flatten for UI
+    const formatted = filtered.map((record) => ({
       availabilityId: record.id,
       start_date: record.start_date,
       end_date: record.end_date,
       total_slots: record.total_slots,
       booked_slots: record.booked_slots,
-      ...record.placements
+      ...record.placements,
     }));
   
     setPlacements(formatted);
