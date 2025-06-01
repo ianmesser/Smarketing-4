@@ -158,7 +158,8 @@ const fetchPlacements = async () => {
       price: parseFloat(newPlacement.defaultPrice || 0),
       style_guide_url: styleGuideUrl,
       is_booked: false,
-      dimensions: newPlacement.dimensions  // ✅ New line
+      dimensions: newPlacement.dimensions,  // ✅ New line
+      format: newPlacement.format  // ← ✅ this line is new
     }
   ]).select();
 
