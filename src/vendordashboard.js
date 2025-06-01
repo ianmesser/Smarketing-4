@@ -41,6 +41,7 @@ const VendorPlacements = () => {
     }
   
     // ✅ Filter out fully booked slots
+    console.log("Raw availability data from Supabase:", data);
     const filtered = data.filter((record) => {
       const openSlots = record.total_slots - record.booked_slots;
       return openSlots > 0;
