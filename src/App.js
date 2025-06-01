@@ -1,7 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import RetailerDashboard from "./RetailerDashboard";
-import VendorDashboard from "./vendorDashboard";
+import VendorDashboard from "./vendordashboard";
 
 function App() {
   return (
