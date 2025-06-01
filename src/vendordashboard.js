@@ -86,16 +86,26 @@ const VendorPlacements = () => {
     setFilteredPlacements(results);
   };
 
-  const addToCart = (availability) => {
-    const openSlots = availability.total_slots - availability.booked_slots;
-    
-    if (openSlots <= 0) {
-      alert("This availability is fully booked.");
-      return;
-    }
+  const addToCart = async (availability) => {
+    const alreadyInCart = cart.find(
+      (item) => item.availabilityId === availability.availabilityId
+    );
+    if (alreadyInCart) return;
   
-    if (!cart.find((item) => item.availabilityId === availability.availabilityId)) {
-      setCart([...cart, availability]);
+    // 1. Update local cart state
+    setCart((prev) => [...prev, availability]);
+  
+    // 2. Insert into Supabase vendor_cart table
+    const { error } = await supabase.from("vendor_cart").insert([
+      {
+        availability_id: availability.availabilityId,
+        // You can add vendor_id here in the future
+      },
+    ]);
+  
+    if (error) {
+      console.error("Failed to add to cart:", error.message);
+      alert("There was a problem adding this item to your cart.");
     }
   };
 
