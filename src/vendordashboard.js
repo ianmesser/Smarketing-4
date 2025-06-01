@@ -195,59 +195,41 @@ const VendorPlacements = () => {
       </div>
 
       {/* Placements List */}
-      {filteredPlacements.map((p) => (
-        <div
-          key={p.availabilityId}
-          className="bg-white shadow-md rounded-lg p-4 mb-4 border border-gray-200"
-        >
-          <h3 className="text-lg font-semibold text-gray-800 mb-2">
-            {p.location || "Untitled Placement"}
-          </h3>
-          <p className="text-sm text-gray-500 mb-1">
-            <strong>Retailer:</strong> GameStop
-          </p>
-          <p className="text-sm text-gray-500 mb-1">
-            <strong>Channel:</strong> {p.channel || "—"} | <strong>Format:</strong> {p.format || "—"}
-          </p>
-          <p className="text-sm text-gray-500 mb-1">
-            <strong>Dimensions:</strong> {p.dimensions || "—"}
-          </p>
-          <p className="text-sm text-gray-500 mb-1">
-            <strong>Start:</strong> {p.start_date ? new Date(p.start_date).toLocaleDateString() : "—"} | <strong>End:</strong> {p.end_date ? new Date(p.end_date).toLocaleDateString() : "—"}
-          </p>
-          <p className="text-sm text-gray-500 mb-1">
-            <strong>Price:</strong> ${p.price} | <strong>Slots:</strong> {p.total_slots - p.booked_slots} available of {p.total_slots}
-          </p>
-        
-          {p.style_guide_url ? (
-            <a
-              href={p.style_guide_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-600 underline text-sm inline-block mt-2"
-            >
-              View Style Guide
-            </a>
-          ) : (
-            <p className="text-sm text-gray-400 mt-2">No style guide</p>
-          )}
-        
-          <button
-            onClick={() => addToCart(p)}
-            className="mt-4 bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-2 rounded"
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {filteredPlacements.map((p) => (
+          <div
+            key={p.availabilityId}
+            className="bg-white shadow-md rounded-lg p-4 border border-gray-200"
           >
-            Add to Cart
-          </button>
-        </div>
-      ))}
-
-      {/* Cart */}
-      <h3>Cart ({cart.length} items)</h3>
-      {cart.map((c) => (
-        <div key={c.availabilityId}>
-          {c.location} — ${c.price} <br />
-          {new Date(c.start_date).toLocaleDateString()} → {new Date(c.end_date).toLocaleDateString()}
-        </div>
+            <h3 className="text-xl font-bold mb-2">{p.location || "Untitled Placement"}</h3>
+            <p><strong>Retailer:</strong> GameStop</p>
+            <p><strong>Channel:</strong> {p.channel} <strong>| Format:</strong> {p.format}</p>
+            <p><strong>Dimensions:</strong> {p.dimensions || "—"}</p>
+            <p><strong>Start:</strong> {new Date(p.start_date).toLocaleDateString()} <strong>End:</strong> {new Date(p.end_date).toLocaleDateString()}</p>
+            <p><strong>Price:</strong> ${p.price} <strong>| Slots:</strong> {p.total_slots - p.booked_slots} available out of {p.total_slots}</p>
+      
+            {p.style_guide_url ? (
+              <a
+                href={p.style_guide_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 underline block mt-2"
+              >
+                View Style Guide
+              </a>
+            ) : (
+              <span className="block mt-2 text-gray-500">No style guide</span>
+            )}
+      
+            <button
+              className="mt-3 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+              onClick={() => addToCart(p)}
+            >
+              Add to Cart
+            </button>
+          </div>
+        ))}
+      </div>
       ))}
       {cart.length > 0 && <button onClick={checkout}>Checkout</button>}
     </div>
