@@ -197,41 +197,47 @@ const VendorPlacements = () => {
       {/* Placements List */}
       {filteredPlacements.map((p) => (
         <div
-          key={p.id}
-          style={{
-            border: "1px solid #ccc",
-            padding: "0.5rem",
-            marginBottom: "0.5rem",
-            borderRadius: "4px",
-          }}
+          key={p.availabilityId}
+          className="bg-white shadow-md rounded-lg p-4 mb-4 border border-gray-200"
         >
-          <strong>Retailer:</strong> GameStop <br />
-          <strong>Placement:</strong> {p.location || "—"} <br />
-          <strong>Channel:</strong> {p.channel || "—"} <br />
-          <strong>Format:</strong> {p.format || "—"} <br />
-          <strong>Dimensions:</strong> {p.dimensions || "—"} <br />
-          <strong>Start Date:</strong>{" "}
-          {p.start_date ? new Date(p.start_date).toLocaleDateString() : "—"} <br />
-          <strong>End Date:</strong>{" "}
-          {p.end_date ? new Date(p.end_date).toLocaleDateString() : "—"} <br />
-          <strong>Price:</strong> {p.price ? `$${p.price}` : "—"} <br />
-          <strong>Slots:</strong>{" "}
-          {p.total_slots - p.booked_slots} available out of {p.total_slots} <br />
-      
+          <h3 className="text-lg font-semibold text-gray-800 mb-2">
+            {p.location || "Untitled Placement"}
+          </h3>
+          <p className="text-sm text-gray-500 mb-1">
+            <strong>Retailer:</strong> GameStop
+          </p>
+          <p className="text-sm text-gray-500 mb-1">
+            <strong>Channel:</strong> {p.channel || "—"} | <strong>Format:</strong> {p.format || "—"}
+          </p>
+          <p className="text-sm text-gray-500 mb-1">
+            <strong>Dimensions:</strong> {p.dimensions || "—"}
+          </p>
+          <p className="text-sm text-gray-500 mb-1">
+            <strong>Start:</strong> {p.start_date ? new Date(p.start_date).toLocaleDateString() : "—"} | <strong>End:</strong> {p.end_date ? new Date(p.end_date).toLocaleDateString() : "—"}
+          </p>
+          <p className="text-sm text-gray-500 mb-1">
+            <strong>Price:</strong> ${p.price} | <strong>Slots:</strong> {p.total_slots - p.booked_slots} available of {p.total_slots}
+          </p>
+        
           {p.style_guide_url ? (
             <a
               href={p.style_guide_url}
               target="_blank"
               rel="noopener noreferrer"
-              style={{ color: "blue", textDecoration: "underline" }}
+              className="text-blue-600 underline text-sm inline-block mt-2"
             >
               View Style Guide
             </a>
           ) : (
-            <span>No style guide</span>
+            <p className="text-sm text-gray-400 mt-2">No style guide</p>
           )}
-          <br />
-          <button onClick={() => addToCart(p)}>Add to Cart</button>
+        
+          <button
+            onClick={() => addToCart(p)}
+            className="mt-4 bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-2 rounded"
+          >
+            Add to Cart
+          </button>
         </div>
       ))}
 
