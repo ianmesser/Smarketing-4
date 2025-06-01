@@ -85,29 +85,36 @@ const VendorPlacements = () => {
   };
 
   const checkout = async () => {
-    for (const availability of cart) {
-      const { error } = await supabase.from("purchases").insert([
+    for (const placement of cart) {
+      // Create purchase record
+      const { error: insertError } = await supabase.from("purchases").insert([
         {
           vendor_id: supabase.auth.getUser().data.user.id,
-          availability_id: availability.availabilityId,
+          availability_id: placement.availabilityId, // not placement.id anymore
         },
       ]);
-      if (error) {
-        console.error("Checkout failed for:", placement.id, error.message);
+  
+      if (insertError) {
+        console.error("Checkout failed for:", placement.availabilityId, insertError.message);
         continue;
       }
-
-      await supabase
-        .from("placements")
-        .update({ is_booked: true })
-        .eq("id", placement.id);
+  
+      // Increment booked_slots by 1
+      const { error: updateError } = await supabase.rpc("increment_booked_slots", {
+        avail_id: placement.availabilityId,
+        increment_by: 1,
+      });
+  
+      if (updateError) {
+        console.error("Failed to increment booked slots:", updateError.message);
+      }
     }
-
+  
     alert("Checkout complete!");
     setCart([]);
     fetchPlacements();
   };
-
+  
   return (
     <div style={{ padding: "1rem" }}>
       <h2>Available Ad Placements</h2>
