@@ -103,7 +103,7 @@ const VendorPlacements = () => {
       .eq("availability_id", availability.availabilityId);
   
     if (checkError) {
-      console.error("Error checking existing cart item:", checkError.message);
+      console.error("Supabase SELECT error:", checkError); // ← add this
       alert("Could not check cart. Try again.");
       return;
     }
