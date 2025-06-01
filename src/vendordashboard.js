@@ -87,26 +87,48 @@ const VendorPlacements = () => {
   };
 
   const addToCart = async (availability) => {
-    const alreadyInCart = cart.find(
-      (item) => item.availabilityId === availability.availabilityId
-    );
-    if (alreadyInCart) return;
+    const vendor_id = "demo-vendor-123"; // Replace this with dynamic auth ID later
   
-    // 1. Update local cart state
-    setCart((prev) => [...prev, availability]);
+    // Prevent duplicate in local cart
+    if (cart.find((item) => item.availabilityId === availability.availabilityId)) {
+      alert("This availability is already in your cart.");
+      return;
+    }
   
-    // 2. Insert into Supabase vendor_cart table
-    const { error } = await supabase.from("vendor_cart").insert([
+    // Prevent duplicate in Supabase
+    const { data: existing, error: checkError } = await supabase
+      .from("vendor_cart")
+      .select("id")
+      .eq("vendor_id", vendor_id)
+      .eq("availability_id", availability.availabilityId);
+  
+    if (checkError) {
+      console.error("Error checking existing cart item:", checkError.message);
+      alert("Could not check cart. Try again.");
+      return;
+    }
+  
+    if (existing.length > 0) {
+      alert("This availability is already in your cart.");
+      return;
+    }
+  
+    // Add to Supabase cart
+    const { error: insertError } = await supabase.from("vendor_cart").insert([
       {
+        vendor_id,
         availability_id: availability.availabilityId,
-        // You can add vendor_id here in the future
       },
     ]);
   
-    if (error) {
-      console.error("Failed to add to cart:", error.message);
-      alert("There was a problem adding this item to your cart.");
+    if (insertError) {
+      console.error("Error adding to cart:", insertError.message);
+      alert("Failed to add to cart. Try again.");
+      return;
     }
+  
+    // Add to local state
+    setCart([...cart, availability]);
   };
 
 
