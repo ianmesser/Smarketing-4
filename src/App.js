@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import RetailerDashboard from "./RetailerDashboard";
 import VendorPlacements from "./vendordashboard"; // Update path if needed
 import VendorCart from "./VendorCart"; // Make sure this matches the file name and path
+import MyCampaigns from "./MyCampaigns"; // ⬅️ Add this at the top with other imports
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
           <Route path="/" element={<RetailerDashboard />} />
           <Route path="/vendor" element={<VendorPlacements />} />
           <Route path="/cart" element={<VendorCart />} />
+          <Route path="/my-campaigns" element={<MyCampaigns />} />
         </Routes>
       </div>
     </Router>
