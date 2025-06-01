@@ -1,24 +1,27 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import RetailerDashboard from "./RetailerDashboard";
-import VendorDashboard from "./vendordashboard";
+import VendorPlacements from "./vendordashboard"; // Update path if needed
+import VendorCart from "./VendorCart"; // Make sure this matches the file name and path
 
 function App() {
   return (
     <Router>
       <div className="min-h-screen bg-white text-gray-900 p-4">
-        {/* Navigation Links */}
-        <nav className="mb-6 flex gap-4">
-          <Link to="/retailer" className="text-blue-600 underline">Retailer Dashboard</Link>
-          <Link to="/vendor" className="text-blue-600 underline">Vendor Dashboard</Link>
-        </nav>
+        <h1 className="text-2xl font-bold mb-4">Ad Placement Marketplace</h1>
 
-        {/* Page Routes */}
+        {/* 🧭 Navigation */}
+        <div className="flex gap-4 mb-4">
+          <Link to="/" className="text-blue-600 underline">Retailer Dashboard</Link>
+          <Link to="/vendor" className="text-blue-600 underline">Vendor Dashboard</Link>
+          <Link to="/cart" className="text-blue-600 underline">Vendor Cart</Link>
+        </div>
+
+        {/* 🛣️ Routes */}
         <Routes>
-          <Route path="/retailer" element={<RetailerDashboard />} />
-          <Route path="/vendor" element={<VendorDashboard />} />
-          {/* Default fallback: redirect to Retailer Dashboard */}
-          <Route path="*" element={<RetailerDashboard />} />
+          <Route path="/" element={<RetailerDashboard />} />
+          <Route path="/vendor" element={<VendorPlacements />} />
+          <Route path="/cart" element={<VendorCart />} />
         </Routes>
       </div>
     </Router>
@@ -26,4 +29,3 @@ function App() {
 }
 
 export default App;
-
