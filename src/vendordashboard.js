@@ -230,7 +230,7 @@ const VendorPlacements = () => {
           </div>
         ))}
       </div>
-      ))}
+     
       {cart.length > 0 && <button onClick={checkout}>Checkout</button>}
     </div>
   );
