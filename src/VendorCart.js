@@ -82,6 +82,22 @@ const VendorCart = () => {
     alert("Checkout complete!");
   };
 
+  const removeFromCart = async (cartIdToDelete) => {
+    const { error } = await supabase
+      .from("vendor_cart")
+      .delete()
+      .eq("id", cartIdToDelete);
+  
+    if (error) {
+      console.error("Failed to remove from cart:", error.message);
+      alert("Could not remove item from cart. Try again.");
+      return;
+    }
+  
+    // Update the UI by filtering out the removed item
+    setCart((prev) => prev.filter((item) => item.cartId !== cartIdToDelete));
+  };
+
   return (
     <div style={{ padding: "1rem" }}>
       <h2>Your Cart ({cart.length} item{cart.length !== 1 ? "s" : ""})</h2>
@@ -90,6 +106,13 @@ const VendorCart = () => {
           <strong>{item.location}</strong> | {item.channel} | {item.format} <br />
           {item.dimensions} | ${item.price} <br />
           {item.start_date} to {item.end_date}
+          <br />
+          <button
+            onClick={() => removeFromCart(item.cartId)}
+            style={{ marginTop: "0.5rem", color: "red", border: "none", background: "none", cursor: "pointer" }}
+          >
+            Remove from Cart
+          </button>
         </div>
       ))}
       {cart.length > 0 && (
