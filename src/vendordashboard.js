@@ -154,31 +154,45 @@ const VendorPlacements = () => {
       </div>
 
       {/* Placements List */}
-      <strong>Retailer:</strong> GameStop <br />
-      <strong>Placement:</strong> {p.location || "—"} <br />
-      <strong>Channel:</strong> {p.channel || "—"} <br />
-      <strong>Format:</strong> {p.format || "—"} <br />
-      <strong>Dimensions:</strong> {p.dimensions || "—"} <br />
-      <strong>Start Date:</strong> {p.start_date ? new Date(p.start_date).toLocaleDateString() : "—"} <br />
-      <strong>End Date:</strong> {p.end_date ? new Date(p.end_date).toLocaleDateString() : "—"} <br />
-      <strong>Price:</strong> {p.price ? `$${p.price}` : "—"} <br />
-      <strong>Slots:</strong> {p.total_slots - p.booked_slots} available out of {p.total_slots} <br />
-      
-      {p.style_guide_url ? (
-        <a
-          href={p.style_guide_url}
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ color: "blue", textDecoration: "underline" }}
+      {filteredPlacements.map((p) => (
+        <div
+          key={p.id}
+          style={{
+            border: "1px solid #ccc",
+            padding: "0.5rem",
+            marginBottom: "0.5rem",
+            borderRadius: "4px",
+          }}
         >
-          View Style Guide
-        </a>
-      ) : (
-        <span>No style guide</span>
-      )}
-      <br />
+          <strong>Retailer:</strong> GameStop <br />
+          <strong>Placement:</strong> {p.location || "—"} <br />
+          <strong>Channel:</strong> {p.channel || "—"} <br />
+          <strong>Format:</strong> {p.format || "—"} <br />
+          <strong>Dimensions:</strong> {p.dimensions || "—"} <br />
+          <strong>Start Date:</strong>{" "}
+          {p.start_date ? new Date(p.start_date).toLocaleDateString() : "—"} <br />
+          <strong>End Date:</strong>{" "}
+          {p.end_date ? new Date(p.end_date).toLocaleDateString() : "—"} <br />
+          <strong>Price:</strong> {p.price ? `$${p.price}` : "—"} <br />
+          <strong>Slots:</strong>{" "}
+          {p.total_slots - p.booked_slots} available out of {p.total_slots} <br />
       
-      <button onClick={() => addToCart(p)}>Add to Cart</button>
+          {p.style_guide_url ? (
+            <a
+              href={p.style_guide_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: "blue", textDecoration: "underline" }}
+            >
+              View Style Guide
+            </a>
+          ) : (
+            <span>No style guide</span>
+          )}
+          <br />
+          <button onClick={() => addToCart(p)}>Add to Cart</button>
+        </div>
+      ))}
 
       {/* Cart */}
       <h3>Cart ({cart.length} items)</h3>
