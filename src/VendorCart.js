@@ -25,12 +25,12 @@ const VendorCart = () => {
 
       const { data: availabilityData, error: availError } = await supabase
         .from("availability")
-        .select(\`
+        .select(\'
           id, start_date, end_date, total_slots, booked_slots,
           placements (
             id, location, channel, price, dimensions, format, style_guide_url
           )
-        \`)
+        \')
         .in("id", availabilityIds);
 
       if (availError) {
