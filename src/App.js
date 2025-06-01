@@ -16,6 +16,7 @@ function App() {
           <Link to="/" className="text-blue-600 underline">Retailer Dashboard</Link>
           <Link to="/vendor" className="text-blue-600 underline">Vendor Dashboard</Link>
           <Link to="/cart" className="text-blue-600 underline">Vendor Cart</Link>
+          <Link to="/my-campaigns" className="text-blue-600 underline">My Campaigns</Link>
         </div>
 
         {/* 🛣️ Routes */}
