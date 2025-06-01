@@ -78,18 +78,18 @@ const VendorPlacements = () => {
     setFilteredPlacements(results);
   };
 
-  const addToCart = (placement) => {
-    if (!cart.find((item) => item.id === placement.id)) {
-      setCart([...cart, placement]);
+  const addToCart = (availability) => {
+    if (!cart.find((item) => item.availabilityId === availability.availabilityId)) {
+      setCart([...cart, availability]);
     }
   };
 
   const checkout = async () => {
-    for (const placement of cart) {
+    for (const availability of cart) {
       const { error } = await supabase.from("purchases").insert([
         {
           vendor_id: supabase.auth.getUser().data.user.id,
-          placement_id: placement.id,
+          availability_id: availability.availabilityId,
         },
       ]);
       if (error) {
@@ -197,7 +197,10 @@ const VendorPlacements = () => {
       {/* Cart */}
       <h3>Cart ({cart.length} items)</h3>
       {cart.map((c) => (
-        <div key={c.id}>{c.location} — ${c.price}</div>
+        <div key={c.availabilityId}>
+          {c.location} — ${c.price} <br />
+          {new Date(c.start_date).toLocaleDateString()} → {new Date(c.end_date).toLocaleDateString()}
+        </div>
       ))}
       {cart.length > 0 && <button onClick={checkout}>Checkout</button>}
     </div>
