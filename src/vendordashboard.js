@@ -32,14 +32,15 @@ const VendorPlacements = () => {
           style_guide_url,
           is_booked
         )
-      `);
+      `)
+      .gte("booked_slots", 0) // just in case
+      .filter("booked_slots", "lt", "total_slots"); // 👈 filters out fully booked
   
     if (error) {
-      console.error("Error fetching joined availability:", error);
+      console.error("Error fetching availability:", error);
       return;
     }
   
-    // Flatten nested data for easier rendering
     const formatted = data.map((record) => ({
       availabilityId: record.id,
       start_date: record.start_date,
