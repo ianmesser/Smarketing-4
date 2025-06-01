@@ -53,31 +53,38 @@ const VendorCart = () => {
   }, []);
 
   const checkout = async () => {
-    for (const item of cart) {
-      const { error } = await supabase.from("purchases").insert([
-        {
-          vendor_id: "demo-id-or-null",
-          availability_id: item.availabilityId,
-        },
-      ]);
-
-      if (error) {
-        console.error("Checkout failed for:", item.availabilityId, error.message);
-        continue;
-      }
+    if (cart.length === 0) {
+      alert("Your cart is empty.");
+      return;
     }
-
-    const availabilityIds = cart.map((item) => item.availabilityId);
-
+  
+    const purchasesToInsert = cart.map((item) => ({
+      vendor_id: "demo-id-or-null", // Replace with actual vendor logic when ready
+      availability_id: item.availabilityId,
+    }));
+  
+    const { error: insertError } = await supabase.from("purchases").insert(purchasesToInsert);
+  
+    if (insertError) {
+      console.error("Error inserting purchases:", insertError.message);
+      alert("Failed to complete checkout. Please try again.");
+      return;
+    }
+  
+    // Collect cart row IDs to delete
+    const cartIds = cart.map((item) => item.cartId);
+  
     const { error: deleteError } = await supabase
       .from("vendor_cart")
       .delete()
-      .in("availability_id", availabilityIds);
-
+      .in("id", cartIds);
+  
     if (deleteError) {
-      console.error("Error clearing cart:", deleteError.message);
+      console.error("Error clearing vendor_cart after purchase:", deleteError.message);
+      alert("Purchase succeeded, but cart wasn't fully cleared.");
+      return;
     }
-
+  
     setCart([]);
     alert("Checkout complete!");
   };
