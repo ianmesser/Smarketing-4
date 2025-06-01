@@ -17,16 +17,40 @@ const VendorPlacements = () => {
 
   const fetchPlacements = async () => {
     const { data, error } = await supabase
-      .from("placements")
-      .select("*")
-      .eq("is_booked", false);
-
+      .from("availability")
+      .select(`
+        id,
+        start_date,
+        end_date,
+        total_slots,
+        booked_slots,
+        placements (
+          id,
+          location,
+          channel,
+          price,
+          style_guide_url,
+          is_booked
+        )
+      `);
+  
     if (error) {
-      console.error("Error fetching placements:", error);
-    } else {
-      setPlacements(data);
-      setFilteredPlacements(data);
+      console.error("Error fetching joined availability:", error);
+      return;
     }
+  
+    // Flatten nested data for easier rendering
+    const formatted = data.map((record) => ({
+      availabilityId: record.id,
+      start_date: record.start_date,
+      end_date: record.end_date,
+      total_slots: record.total_slots,
+      booked_slots: record.booked_slots,
+      ...record.placements
+    }));
+  
+    setPlacements(formatted);
+    setFilteredPlacements(formatted);
   };
 
   const applyFilters = () => {
@@ -130,25 +154,31 @@ const VendorPlacements = () => {
       </div>
 
       {/* Placements List */}
-      {filteredPlacements.map((p) => (
-        <div
-          key={p.id}
-          style={{
-            border: "1px solid #ccc",
-            padding: "0.5rem",
-            marginBottom: "0.5rem",
-            borderRadius: "4px",
-          }}
+      <strong>Retailer:</strong> GameStop <br />
+      <strong>Placement:</strong> {p.location || "—"} <br />
+      <strong>Channel:</strong> {p.channel || "—"} <br />
+      <strong>Format:</strong> {p.format || "—"} <br />
+      <strong>Dimensions:</strong> {p.dimensions || "—"} <br />
+      <strong>Start Date:</strong> {p.start_date ? new Date(p.start_date).toLocaleDateString() : "—"} <br />
+      <strong>End Date:</strong> {p.end_date ? new Date(p.end_date).toLocaleDateString() : "—"} <br />
+      <strong>Price:</strong> {p.price ? `$${p.price}` : "—"} <br />
+      <strong>Slots:</strong> {p.total_slots - p.booked_slots} available out of {p.total_slots} <br />
+      
+      {p.style_guide_url ? (
+        <a
+          href={p.style_guide_url}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ color: "blue", textDecoration: "underline" }}
         >
-          <strong>Retailer:</strong> GameStop <br />
-          <strong>Placement:</strong> {p.location} <br />
-          <strong>Channel:</strong> {p.channel} <br />
-          <strong>Start:</strong> {p.start_date} <br />
-          <strong>End:</strong> {p.end_date} <br />
-          <strong>Cost:</strong> ${p.price} <br />
-          <button onClick={() => addToCart(p)}>Add to Cart</button>
-        </div>
-      ))}
+          View Style Guide
+        </a>
+      ) : (
+        <span>No style guide</span>
+      )}
+      <br />
+      
+      <button onClick={() => addToCart(p)}>Add to Cart</button>
 
       {/* Cart */}
       <h3>Cart ({cart.length} items)</h3>
