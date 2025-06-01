@@ -14,42 +14,41 @@ const VendorCart = () => {
     const fetchCart = async () => {
       const { data, error } = await supabase
         .from("vendor_cart")
-        .select("availability_id");
-
-      if (error) {
-        console.error("Error fetching vendor cart:", error.message);
-        return;
-      }
-
-      const availabilityIds = data.map((item) => item.availability_id);
-
-      const { data: availabilityData, error: availError } = await supabase
-        .from("availability")
         .select(`
-          id, start_date, end_date, total_slots, booked_slots,
-          placements (
-            id, location, channel, price, dimensions, format, style_guide_url
+          id,
+          availability_id,
+          availability (
+            id,
+            start_date,
+            end_date,
+            total_slots,
+            booked_slots,
+            placements (
+              location,
+              channel,
+              price,
+              format,
+              dimensions,
+              style_guide_url
+            )
           )
-        `)
-        .in("id", availabilityIds);
-
-      if (availError) {
-        console.error("Error joining availabilities from cart:", availError.message);
+        `);
+  
+      if (error) {
+        console.error("Cart fetch error:", error.message);
         return;
       }
-
-      const formatted = availabilityData.map((record) => ({
-        availabilityId: record.id,
-        start_date: record.start_date,
-        end_date: record.end_date,
-        total_slots: record.total_slots,
-        booked_slots: record.booked_slots,
-        ...record.placements,
+  
+      const formatted = data.map((row) => ({
+        cartId: row.id,
+        availabilityId: row.availability.id,
+        ...row.availability,
+        ...row.availability.placements
       }));
-
+  
       setCart(formatted);
     };
-
+  
     fetchCart();
   }, []);
 
