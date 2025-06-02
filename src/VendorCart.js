@@ -104,7 +104,7 @@ const VendorCart = () => {
   
       const { error: insertError } = await supabase.from("purchases").insert([
         {
-          vendor_id: "demo-vendor-123", // temporary until auth
+          vendor_id: "00000000-0000-4000-8000-000000000000", // temporary until auth
           availability_id: availabilityId,
         },
       ]);
