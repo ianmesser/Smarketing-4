@@ -53,36 +53,61 @@ const VendorCart = () => {
   }, []);
 
   const checkout = async () => {
-    if (cart.length === 0) {
-      alert("Your cart is empty.");
-      return;
+    for (const item of cart) {
+      const availabilityId = item.availabilityId;
+  
+      // 1. Insert into purchases
+      const { error: insertError } = await supabase.from("purchases").insert([
+        {
+          vendor_id: "00000000-0000-4000-8000-000000000000", // Replace with actual vendor ID when available
+          availability_id: availabilityId,
+        },
+      ]);
+  
+      if (insertError) {
+        console.error("Checkout failed for:", availabilityId, insertError.message);
+        continue;
+      }
+  
+      // 2. Fetch fresh booked_slots and total_slots
+      const { data: fresh, error: fetchError } = await supabase
+        .from("availability")
+        .select("booked_slots, total_slots")
+        .eq("id", availabilityId)
+        .single();
+  
+      if (fetchError || !fresh) {
+        console.error("Failed to fetch availability:", fetchError?.message);
+        continue;
+      }
+  
+      // 3. Increment booked_slots
+      const updatedBooked = fresh.booked_slots + 1;
+  
+      const { error: updateError } = await supabase
+        .from("availability")
+        .update({ booked_slots: updatedBooked })
+        .eq("id", availabilityId);
+  
+      if (updateError) {
+        console.error("Failed to update booked_slots:", updateError.message);
+        continue;
+      }
+  
+      // 🔄 Optional: if updatedBooked >= fresh.total_slots, update status to 'booked'
+      // await supabase.from("availability").update({ status: "booked" }).eq("id", availabilityId);
     }
   
-    const purchasesToInsert = cart.map((item) => ({
-      vendor_id: "00000000-0000-4000-8000-000000000000", // Replace with actual vendor logic when ready
-      availability_id: item.availabilityId,
-    }));
-  
-    const { error: insertError } = await supabase.from("purchases").insert(purchasesToInsert);
-  
-    if (insertError) {
-      console.error("Error inserting purchases:", insertError.message);
-      alert("Failed to complete checkout. Please try again.");
-      return;
-    }
-  
-    // Collect cart row IDs to delete
-    const cartIds = cart.map((item) => item.cartId);
+    // 4. Clear vendor_cart entries
+    const availabilityIds = cart.map((item) => item.availabilityId);
   
     const { error: deleteError } = await supabase
       .from("vendor_cart")
       .delete()
-      .in("id", cartIds);
+      .in("availability_id", availabilityIds);
   
     if (deleteError) {
-      console.error("Error clearing vendor_cart after purchase:", deleteError.message);
-      alert("Purchase succeeded, but cart wasn't fully cleared.");
-      return;
+      console.error("Error clearing cart:", deleteError.message);
     }
   
     setCart([]);
