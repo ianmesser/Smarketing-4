@@ -90,7 +90,13 @@ const VendorCart = () => {
   
       // ✅ 4. Log the update attempt
       console.log(`Updating booked_slots for availability ${availabilityId} to ${updatedBooked}`);
-  
+
+      // ✅ Calculate new booked_slots count
+      const newBookedSlots = fresh.booked_slots + 1;
+      
+      // ✅ Check if this will fully book the placement
+      const isFullyBooked = newBookedSlots >= fresh.total_slots;
+      
       const { error: updateError } = await supabase
         .from("availability")
         .update({ booked_slots: fresh.booked_slots + 1,
