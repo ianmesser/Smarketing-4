@@ -92,7 +92,7 @@ const VendorCart = () => {
       const { error: updateError } = await supabase
         .from("availability")
         .update({ booked_slots: fresh.booked_slots + 1 })
-        .eq("id", String(availability.availabilityId))
+        .eq("id", item.availabilityId); // ⬅ FIXED THIS
 
   
       if (updateError) {
