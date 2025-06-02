@@ -93,7 +93,9 @@ const VendorCart = () => {
   
       const { error: updateError } = await supabase
         .from("availability")
-        .update({ booked_slots: fresh.booked_slots + 1 })
+        .update({ booked_slots: fresh.booked_slots + 1,
+        status: isFullyBooked ? "booked" : "open", // <-- this line ensures correct status
+      })
         .eq("id", item.availabilityId); // ⬅ FIXED THIS
 
   
