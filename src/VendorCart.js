@@ -84,6 +84,8 @@ const VendorCart = () => {
         continue;
       }
   
+      console.log("Fetched availability record:", fresh); // 👈 Add this here
+      
       const updatedBooked = fresh.booked_slots + 1;
   
       // ✅ 4. Log the update attempt
