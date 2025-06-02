@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
 
@@ -21,8 +20,6 @@ const MyCampaigns = () => {
             id,
             start_date,
             end_date,
-            total_slots,
-            booked_slots,
             placements (
               location,
               channel,
@@ -44,8 +41,6 @@ const MyCampaigns = () => {
         availabilityId: row.availability?.id,
         start_date: row.availability?.start_date,
         end_date: row.availability?.end_date,
-        total_slots: row.availability?.total_slots,
-        booked_slots: row.availability?.booked_slots,
         ...row.availability?.placements
       }));
 
@@ -57,10 +52,9 @@ const MyCampaigns = () => {
 
   return (
     <div style={{ padding: "1rem" }}>
-      <h2 className="text-2xl font-bold mb-6">
+      <h2>
         My Campaigns ({purchases.length} purchase{purchases.length !== 1 ? "s" : ""})
       </h2>
-  
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {purchases.map((item) => (
           <div
@@ -73,7 +67,7 @@ const MyCampaigns = () => {
             <p><strong>Dimensions:</strong> {item.dimensions || "—"}</p>
             <p><strong>Start:</strong> {item.start_date} <strong>| End:</strong> {item.end_date}</p>
             <p><strong>Price:</strong> ${item.price}</p>
-  
+
             {item.style_guide_url ? (
               <a
                 href={item.style_guide_url}
@@ -91,5 +85,6 @@ const MyCampaigns = () => {
       </div>
     </div>
   );
+};
 
 export default MyCampaigns;
