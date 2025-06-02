@@ -59,21 +59,28 @@ const MyCampaigns = () => {
     <div style={{ padding: "1rem" }}>
       <h2>My Campaigns ({purchases.length} purchase{purchases.length !== 1 ? "s" : ""})</h2>
       {purchases.map((item) => (
-        <div key={item.purchaseId} style={{ border: "1px solid #ccc", padding: "1rem", marginBottom: "1rem" }}>
-          <h3>{item.location}</h3>
-          <p>
-            <strong>Retailer:</strong> GameStop
-            <strong>Channel:</strong> {item.channel} | <strong>Format:</strong> {item.format}<br />
-            <strong>Dimensions:</strong> {item.dimensions}<br />
-            <strong>Start:</strong> {item.start_date} | <strong>End:</strong> {item.end_date}<br />
-            <strong>Price:</strong> ${item.price}<br />
-          </p>
+        <div
+          key={item.purchaseId}
+          className="bg-white shadow-md rounded-lg p-4 border border-gray-200 mb-4"
+        >
+          <h3 className="text-xl font-bold mb-2">{item.location || "Untitled Placement"}</h3>
+          <p><strong>Retailer:</strong> GameStop</p>
+          <p><strong>Channel:</strong> {item.channel} <strong>| Format:</strong> {item.format}</p>
+          <p><strong>Dimensions:</strong> {item.dimensions || "—"}</p>
+          <p><strong>Start:</strong> {item.start_date} <strong>| End:</strong> {item.end_date}</p>
+          <p><strong>Price:</strong> ${item.price}</p>
+      
           {item.style_guide_url ? (
-            <a href={item.style_guide_url} target="_blank" rel="noopener noreferrer" style={{ color: "blue", textDecoration: "underline" }}>
+            <a
+              href={item.style_guide_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 underline block mt-2"
+            >
               View Style Guide
             </a>
           ) : (
-            <p>No style guide</p>
+            <p className="mt-2 text-gray-500">No style guide</p>
           )}
         </div>
       ))}
