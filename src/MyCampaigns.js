@@ -62,11 +62,11 @@ const MyCampaigns = () => {
         <div key={item.purchaseId} style={{ border: "1px solid #ccc", padding: "1rem", marginBottom: "1rem" }}>
           <h3>{item.location}</h3>
           <p>
+            <strong>Retailer:</strong> GameStop
             <strong>Channel:</strong> {item.channel} | <strong>Format:</strong> {item.format}<br />
             <strong>Dimensions:</strong> {item.dimensions}<br />
             <strong>Start:</strong> {item.start_date} | <strong>End:</strong> {item.end_date}<br />
             <strong>Price:</strong> ${item.price}<br />
-            <strong>Slots:</strong> {item.total_slots - item.booked_slots} available out of {item.total_slots}
           </p>
           {item.style_guide_url ? (
             <a href={item.style_guide_url} target="_blank" rel="noopener noreferrer" style={{ color: "blue", textDecoration: "underline" }}>
