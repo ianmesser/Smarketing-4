@@ -56,33 +56,38 @@ const VendorCart = () => {
     for (const item of cart) {
       const availabilityId = item.availabilityId;
   
-      // 1. Insert into purchases
-      const { error: insertError } = await supabase.from("purchases").insert([
-        {
-          vendor_id: "00000000-0000-4000-8000-000000000000", // Replace with actual vendor ID when available
-          availability_id: availabilityId,
-        },
-      ]);
+      // ✅ 1. Confirm availabilityId being passed
+      console.log("Checking availability for:", availabilityId);
   
-      if (insertError) {
-        console.error("Checkout failed for:", availabilityId, insertError.message);
-        continue;
-      }
-  
-      // 2. Fetch fresh booked_slots and total_slots
+      // ✅ 2. Fetch the latest availability record
       const { data: fresh, error: fetchError } = await supabase
         .from("availability")
         .select("booked_slots, total_slots")
         .eq("id", availabilityId)
         .single();
   
-      if (fetchError || !fresh) {
-        console.error("Failed to fetch availability:", fetchError?.message);
+      // ✅ 3. Log fetch results
+      console.log("Fetched availability record:", fresh);
+      if (fetchError) {
+        console.error("Fetch error:", fetchError.message);
+        continue; // skip this item
+      }
+  
+      if (!fresh) {
+        console.error("No matching availability found for:", availabilityId);
         continue;
       }
   
-      // 3. Increment booked_slots
+      const openSlots = fresh.total_slots - fresh.booked_slots;
+      if (openSlots <= 0) {
+        alert(`Availability for ${item.location} is already fully booked.`);
+        continue;
+      }
+  
       const updatedBooked = fresh.booked_slots + 1;
+  
+      // ✅ 4. Log the update attempt
+      console.log(`Updating booked_slots for availability ${availabilityId} to ${updatedBooked}`);
   
       const { error: updateError } = await supabase
         .from("availability")
@@ -90,17 +95,30 @@ const VendorCart = () => {
         .eq("id", availabilityId);
   
       if (updateError) {
-        console.error("Failed to update booked_slots:", updateError.message);
+        console.error("Error updating booked_slots:", updateError.message);
         continue;
       }
   
-      // 🔄 Optional: if updatedBooked >= fresh.total_slots, update status to 'booked'
-      // await supabase.from("availability").update({ status: "booked" }).eq("id", availabilityId);
+      // ✅ 5. Log purchase insert
+      console.log("Inserting purchase record for:", availabilityId);
+  
+      const { error: insertError } = await supabase.from("purchases").insert([
+        {
+          vendor_id: "demo-vendor-123", // temporary until auth
+          availability_id: availabilityId,
+        },
+      ]);
+  
+      if (insertError) {
+        console.error("Error inserting purchase:", insertError.message);
+        continue;
+      }
+  
+      console.log("✅ Successfully processed availability:", availabilityId);
     }
   
-    // 4. Clear vendor_cart entries
+    // ✅ After processing all items, clear from cart
     const availabilityIds = cart.map((item) => item.availabilityId);
-  
     const { error: deleteError } = await supabase
       .from("vendor_cart")
       .delete()
