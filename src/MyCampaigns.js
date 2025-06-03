@@ -16,6 +16,7 @@ const MyCampaigns = () => {
         .select(`
           id,
           availability_id,
+          campaign_name,
           availability (
             id,
             start_date,
@@ -39,6 +40,7 @@ const MyCampaigns = () => {
       const formatted = data.map((row) => ({
         purchaseId: row.id,
         availabilityId: row.availability?.id,
+        campaign_name: row.campaign_name || "",  // ← add this
         start_date: row.availability?.start_date,
         end_date: row.availability?.end_date,
         ...row.availability?.placements
@@ -50,6 +52,26 @@ const MyCampaigns = () => {
     fetchPurchases();
   }, []);
 
+  const handleCampaignNameChange = (purchaseId, newName) => {
+    setPurchases((prev) =>
+      prev.map((p) =>
+        p.purchaseId === purchaseId ? { ...p, campaign_name: newName } : p
+      )
+    );
+  };
+
+  const updateCampaignName = async (purchaseId, newName) => {
+    const { error } = await supabase
+      .from("purchases")
+      .update({ campaign_name: newName })
+      .eq("id", purchaseId);
+
+    if (error) {
+      console.error("Failed to update campaign name:", error.message);
+      alert("Error updating campaign name.");
+    }
+  };
+  
   return (
     <div style={{ padding: "1rem" }}>
       <h2>
@@ -61,7 +83,16 @@ const MyCampaigns = () => {
             key={item.purchaseId}
             className="bg-white shadow-md rounded-lg p-4 border border-gray-200"
           >
-            <h3 className="text-xl font-bold mb-2">{item.location || "Untitled Placement"}</h3>
+            <div className="mb-2">
+              <input
+                type="text"
+                value={item.campaign_name}
+                onChange={(e) => handleCampaignNameChange(item.purchaseId, e.target.value)}
+                onBlur={() => updateCampaignName(item.purchaseId, item.campaign_name)}
+                className="text-xl font-bold w-full border-b border-gray-300 focus:outline-none"
+                placeholder="Add Campaign Name"
+              />
+            </div>
             <p><strong>Retailer:</strong> GameStop</p>
             <p><strong>Channel:</strong> {item.channel} <strong>| Format:</strong> {item.format}</p>
             <p><strong>Dimensions:</strong> {item.dimensions || "—"}</p>
