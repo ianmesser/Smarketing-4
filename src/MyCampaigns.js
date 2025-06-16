@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
 const supabase = createClient(
   "https://nfulkzvpzqbqpcsvnple.supabase.co",
@@ -74,49 +75,47 @@ const MyCampaigns = () => {
   };
   
   return (
-    <div style={{ padding: "1rem" }}>
-      <h2>
-        My Campaigns ({purchases.length} purchase{purchases.length !== 1 ? "s" : ""})
-      </h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {purchases.map((item) => (
-          <div
-            key={item.purchaseId}
-            className="bg-white shadow-md rounded-lg p-4 border border-gray-200"
-          >
-            <div className="mb-2">
-              <input
-                type="text"
-                value={item.campaign_name}
-                onChange={(e) => handleCampaignNameChange(item.purchaseId, e.target.value)}
-                onBlur={() => updateCampaignName(item.purchaseId, item.campaign_name)}
-                className="text-xl font-bold w-full border-b border-gray-300 focus:outline-none"
-                placeholder="Add Campaign Name"
-              />
-            </div>
-            <p><strong>Retailer:</strong> GameStop</p>
-            <p><strong>Channel:</strong> {item.channel} <strong>| Format:</strong> {item.format}</p>
-            <p><strong>Dimensions:</strong> {item.dimensions || "—"}</p>
-            <p><strong>Start:</strong> {item.start_date} <strong>| End:</strong> {item.end_date}</p>
-            <p><strong>Price:</strong> ${item.price}</p>
-
-            {item.style_guide_url ? (
-              <a
-                href={item.style_guide_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 underline block mt-2"
+    <DragDropContext onDragEnd={handleDragEnd}>
+      <div className="flex gap-6 p-4">
+        {campaigns.map((campaign) => (
+          <Droppable droppableId={campaign.id} key={campaign.id}>
+            {(provided) => (
+              <div
+                ref={provided.innerRef}
+                {...provided.droppableProps}
+                className="w-1/3 bg-gray-100 p-4 rounded shadow"
               >
-                View Style Guide
-              </a>
-            ) : (
-              <p className="mt-2 text-gray-500">No style guide</p>
+                <h3 className="text-lg font-semibold mb-2">{campaign.name}</h3>
+  
+                {purchases
+                  .filter((item) => item.campaign_id === campaign.id)
+                  .map((item, index) => (
+                    <Draggable
+                      key={item.purchaseId}
+                      draggableId={item.purchaseId}
+                      index={index}
+                    >
+                      {(provided) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                          className="bg-white p-3 mb-3 border border-gray-300 rounded"
+                        >
+                          <h4 className="font-bold">{item.location}</h4>
+                          <p>{item.channel} | {item.format}</p>
+                        </div>
+                      )}
+                    </Draggable>
+                  ))}
+  
+                {provided.placeholder}
+              </div>
             )}
-          </div>
+          </Droppable>
         ))}
       </div>
-    </div>
+    </DragDropContext>
   );
-};
 
 export default MyCampaigns;
