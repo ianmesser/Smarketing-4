@@ -61,6 +61,7 @@ const MyCampaigns = () => {
   };
 
   const updateCampaignName = async (purchaseId, newName) => {
+    console.log("Saving campaign name:", newName, "for ID:", purchaseId);
     const { error } = await supabase
       .from("purchases")
       .update({ campaign_name: newName })
