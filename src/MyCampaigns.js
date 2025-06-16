@@ -9,6 +9,10 @@ const supabase = createClient(
 
 const MyCampaigns = () => {
   const [purchases, setPurchases] = useState([]);
+    { id: "brand-awareness", name: "Brand Awareness" },
+    { id: "summer-promo", name: "Summer Promo" },
+    { id: "unassigned", name: "Unassigned" }
+  ]);
 
   useEffect(() => {
     const fetchPurchases = async () => {
