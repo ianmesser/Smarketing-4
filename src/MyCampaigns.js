@@ -56,6 +56,7 @@ const MyCampaigns = () => {
       }));
 
       setPurchases(formatted);
+      console.log("Purchases loaded:", formatted);
     };
 
     fetchPurchases();
