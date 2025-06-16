@@ -117,5 +117,6 @@ const MyCampaigns = () => {
       </div>
     </DragDropContext>
   );
+};
 
 export default MyCampaigns;
