@@ -82,6 +82,11 @@ const MyCampaigns = () => {
       alert("Error updating campaign name.");
     }
   };
+
+  const handleDragEnd = (result) => {
+    console.log("Drag ended:", result);
+    // This is just a placeholder. You’ll add logic here later.
+  };
   
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
