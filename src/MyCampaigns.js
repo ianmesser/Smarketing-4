@@ -24,6 +24,7 @@ const MyCampaigns = () => {
           id,
           availability_id,
           campaign_name,
+          campaign_id,
           availability (
             id,
             start_date,
