@@ -49,7 +49,7 @@ const MyCampaigns = () => {
         purchaseId: row.id,
         availabilityId: row.availability?.id,
         campaign_name: row.campaign_name || "",
-        campaign_id: row.campaign_id || "campaign-1",
+        campaign_id: row.campaign_id || "unassigned",
         start_date: row.availability?.start_date,
         end_date: row.availability?.end_date,
         ...row.availability?.placements
