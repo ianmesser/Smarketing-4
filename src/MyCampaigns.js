@@ -11,9 +11,9 @@ const MyCampaigns = () => {
   const [purchases, setPurchases] = useState([]);
 
   const [campaigns, setCampaigns] = useState([
-    { id: "brand-awareness", name: "Brand Awareness" },
-    { id: "summer-promo", name: "Summer Promo" },
-    { id: "unassigned", name: "Unassigned" }
+    { id: "campaign-1", name: "Holiday 2025" },
+    { id: "campaign-2", name: "Back to School" },
+    { id: "campaign-3", name: "Summer Sale" }
   ]);
 
   useEffect(() => {
@@ -49,7 +49,7 @@ const MyCampaigns = () => {
         purchaseId: row.id,
         availabilityId: row.availability?.id,
         campaign_name: row.campaign_name || "",
-        campaign_id: row.campaign_id || "unassigned", // <-- new fallback
+        campaign_id: row.campaign_id || "campaign-1",
         start_date: row.availability?.start_date,
         end_date: row.availability?.end_date,
         ...row.availability?.placements
