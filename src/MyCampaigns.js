@@ -117,10 +117,16 @@ const MyCampaigns = () => {
     }
   };
   
+// Include a virtual "Unassigned" campaign bucket for any purchases without a campaign_id
+  const allCampaignsWithUnassigned = [
+    { id: "unassigned", name: "Unassigned" },
+    ...campaigns,
+  ];
+
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
       <div className="flex gap-6 p-4">
-        {campaigns.map((campaign) => (
+        {allCampaignsWithUnassigned.map((campaign) => (
           <Droppable droppableId={campaign.id} key={campaign.id}>
             {(provided) => (
               <div
