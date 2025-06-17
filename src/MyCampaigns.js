@@ -83,9 +83,38 @@ const MyCampaigns = () => {
     }
   };
 
-  const handleDragEnd = (result) => {
-    console.log("Drag ended:", result);
-    // This is just a placeholder. You’ll add logic here later.
+  const handleDragEnd = async (result) => {
+    const { destination, source, draggableId } = result;
+    if (!destination) return;
+  
+    // If dropped in the same place, do nothing
+    if (
+      destination.droppableId === source.droppableId &&
+      destination.index === source.index
+    ) {
+      return;
+    }
+  
+    const purchaseId = draggableId;
+    const newCampaignId = destination.droppableId;
+  
+    // Update state for immediate UI feedback
+    setPurchases((prev) =>
+      prev.map((p) =>
+        p.purchaseId === purchaseId ? { ...p, campaign_id: newCampaignId } : p
+      )
+    );
+  
+    // Persist change to Supabase
+    const { error } = await supabase
+      .from("purchases")
+      .update({ campaign_id: newCampaignId })
+      .eq("id", purchaseId);
+  
+    if (error) {
+      console.error("Failed to update campaign_id:", error.message);
+      alert("Error saving campaign update.");
+    }
   };
   
   return (
