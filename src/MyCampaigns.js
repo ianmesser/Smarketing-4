@@ -18,7 +18,7 @@ const MyCampaigns = () => {
     const { data, error } = await supabase
       .from('campaigns')
       .select('*')
-      .eq('vendor_id', staticVendorId); // make sure you already have staticVendorId defined
+      .eq('vendor_id', TEST_VENDOR_ID); // make sure you already have staticVendorId defined
   
     if (error) {
       console.error('Error fetching campaigns:', error);
