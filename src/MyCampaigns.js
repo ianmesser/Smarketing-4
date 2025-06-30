@@ -148,6 +148,42 @@ const MyCampaigns = () => {
     setCampaigns((prev) => [...prev, ...data]);
   };
 
+  const handleDeleteCampaign = async (campaignId) => {
+    const confirmDelete = confirm("Are you sure you want to delete this campaign? All placements will be moved to Unassigned.");
+    if (!confirmDelete) return;
+  
+    // Step 1: Move purchases back to unassigned
+    const { error: updateError } = await supabase
+      .from("purchases")
+      .update({ campaign_id: null })
+      .eq("campaign_id", campaignId);
+  
+    if (updateError) {
+      console.error("Failed to unassign placements:", updateError.message);
+      alert("Error unassigning placements.");
+      return;
+    }
+  
+    // Step 2: Delete campaign row
+    const { error: deleteError } = await supabase
+      .from("campaigns")
+      .delete()
+      .eq("id", campaignId);
+  
+    if (deleteError) {
+      console.error("Failed to delete campaign:", deleteError.message);
+      alert("Error deleting campaign.");
+    } else {
+      // Refresh UI
+      fetchCampaigns();
+      setPurchases((prev) =>
+        prev.map((p) =>
+          p.campaign_id === campaignId ? { ...p, campaign_id: "unassigned" } : p
+        )
+      );
+    }
+  };
+
   const handleRenameCampaign = async (campaignId, currentName) => {
     const newName = prompt("Enter a new name for this campaign:", currentName);
     if (!newName || newName === currentName) return;
@@ -201,6 +237,12 @@ const MyCampaigns = () => {
                       onClick={() => handleRenameCampaign(campaign.id, campaign.name)}
                     >
                       ✏️
+                    </button>
+                    <button
+                      className="text-sm text-red-500 hover:underline"
+                      onClick={() => handleDeleteCampaign(campaign.id)}
+                    >
+                      🗑️
                     </button>
                   </div>
 
