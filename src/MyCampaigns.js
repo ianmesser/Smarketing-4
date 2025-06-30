@@ -123,6 +123,25 @@ const MyCampaigns = () => {
     ...campaigns,
   ];
 
+  const handleAddCampaign = async () => {
+    const name = prompt("Enter a name for your new campaign:");
+    if (!name) return;
+  
+    const { data, error } = await supabase
+      .from("campaigns")
+      .insert([{ name }])
+      .select(); // get the inserted row back
+  
+    if (error) {
+      console.error("Failed to add campaign:", error.message);
+      alert("Error adding campaign.");
+      return;
+    }
+  
+    // Add the new campaign to the UI
+    setCampaigns((prev) => [...prev, ...data]);
+  };
+  
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
       <div className="flex gap-6 p-4">
