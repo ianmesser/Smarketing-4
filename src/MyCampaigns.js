@@ -149,18 +149,24 @@ const MyCampaigns = () => {
   };
 
   const handleRenameCampaign = async (campaignId, currentName) => {
-    const newName = prompt('Enter a new name for this campaign:', currentName);
-    if (!newName || newName === currentName) return;
+    const newName = prompt("Enter a new name for this campaign:", currentName);
+    if (!newName || newName === currentName) {
+      console.log("No new name provided or same as current");
+      return;
+    }
   
-    const { error } = await supabase
-      .from('campaigns')
+    console.log("Renaming campaign ID:", campaignId, "to:", newName);
+  
+    const { data, error } = await supabase
+      .from("campaigns")
       .update({ name: newName })
-      .eq('id', campaignId);
+      .eq("id", campaignId)
+      .select(); // helps confirm what rows updated
   
     if (error) {
-      console.error('Error renaming campaign:', error);
+      console.error("Error renaming campaign:", error);
     } else {
-      // Refetch campaigns
+      console.log("Rename success:", data);
       fetchCampaigns();
     }
   };
