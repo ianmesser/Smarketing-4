@@ -263,6 +263,9 @@ const MyCampaigns = () => {
                           >
                             <h4 className="font-bold">{item.location}</h4>
                             <p>{item.channel} | {item.format}</p>
+                            <p className="text-sm text-gray-500">
+                              {formatDate(item.start_date)} → {formatDate(item.end_date)}
+                            </p>
                           </div>
                         )}
                       </Draggable>
