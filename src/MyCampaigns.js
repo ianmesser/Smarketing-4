@@ -51,10 +51,6 @@ const MyCampaigns = () => {
   }, [vendorId]); // Rerun when vendorId becomes available
 
   // Your existing fetchPurchases() useEffect continues below...
-  useEffect(() => {
-    const fetchPurchases = async () => {
-      // ...
-    };
 
   useEffect(() => {
     const fetchPurchases = async () => {
