@@ -154,48 +154,47 @@ const MyCampaigns = () => {
       </div>
   
       <DragDropContext onDragEnd={handleDragEnd}>
-
-      <div className="flex gap-6 p-4">
-        {allCampaignsWithUnassigned.map((campaign) => (
-          <Droppable droppableId={campaign.id} key={campaign.id}>
-            {(provided) => (
-              <div
-                ref={provided.innerRef}
-                {...provided.droppableProps}
-                className="w-1/3 bg-gray-100 p-4 rounded shadow"
-              >
-                <h3 className="text-lg font-semibold mb-2">{campaign.name}</h3>
+        <div className="flex gap-6 p-4">
+          {allCampaignsWithUnassigned.map((campaign) => (
+            <Droppable droppableId={campaign.id} key={campaign.id}>
+              {(provided) => (
+                <div
+                  ref={provided.innerRef}
+                  {...provided.droppableProps}
+                  className="w-1/3 bg-gray-100 p-4 rounded shadow"
+                >
+                  <h3 className="text-lg font-semibold mb-2">{campaign.name}</h3>
   
-                {purchases
-                  .filter((item) => item.campaign_id === campaign.id)
-                  .map((item, index) => (
-                    <Draggable
-                      key={item.purchaseId}
-                      draggableId={item.purchaseId}
-                      index={index}
-                    >
-                      {(provided) => (
-                        <div
-                          ref={provided.innerRef}
-                          {...provided.draggableProps}
-                          {...provided.dragHandleProps}
-                          className="bg-white p-3 mb-3 border border-gray-300 rounded"
-                        >
-                          <h4 className="font-bold">{item.location}</h4>
-                          <p>{item.channel} | {item.format}</p>
-                        </div>
-                      )}
-                    </Draggable>
-                  ))}
+                  {purchases
+                    .filter((item) => item.campaign_id === campaign.id)
+                    .map((item, index) => (
+                      <Draggable
+                        key={item.purchaseId}
+                        draggableId={item.purchaseId}
+                        index={index}
+                      >
+                        {(provided) => (
+                          <div
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                            className="bg-white p-3 mb-3 border border-gray-300 rounded"
+                          >
+                            <h4 className="font-bold">{item.location}</h4>
+                            <p>{item.channel} | {item.format}</p>
+                          </div>
+                        )}
+                      </Draggable>
+                    ))}
   
-                {provided.placeholder}
-              </div>
-            )}
-          </Droppable>
-        ))}
-      </div>
-    </DragDropContext>
+                  {provided.placeholder}
+                </div>
+              )}
+            </Droppable>
+          ))}
+        </div>
+      </DragDropContext>
+    </>
   );
-};
 
 export default MyCampaigns;
