@@ -7,51 +7,33 @@ const supabase = createClient(
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5mdWxrenZwenFicXBjc3ZucGxlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg0ODA5NzUsImV4cCI6MjA2NDA1Njk3NX0.u6FCTKBgrEvgUGF1LXI7eHNs9jqda-Go579cQOoNkUw"
 );
 
+// 🔐 Hardcoded vendor ID (test)
+const TEST_VENDOR_ID = "00000000-0000-4000-8000-000000000000";
+
 const MyCampaigns = () => {
   const [purchases, setPurchases] = useState([]);
   const [campaigns, setCampaigns] = useState([]);
-  const [vendorId, setVendorId] = useState(null); // 👈 NEW STATE
-  
-  // 👇 NEW useEffect block to fetch current vendor
+
+  // Fetch campaigns belonging to this vendor
   useEffect(() => {
-    const fetchUser = async () => {
-      const { data, error } = await supabase.auth.getUser();
-  
-      if (error) {
-        console.error("Failed to get user:", error.message);
-        return;
-      }
-  
-      if (data?.user?.id) {
-        setVendorId(data.user.id);
-      }
-    };
-  
-    fetchUser();
-  }, []);
-  
-  useEffect(() => {
-    if (!vendorId) return; // Wait until vendorId is available
-  
     const fetchCampaigns = async () => {
       const { data, error } = await supabase
         .from("campaigns")
         .select("*")
-        .eq("vendor_id", vendorId); // Filter by vendor_id
-  
+        .eq("vendor_id", TEST_VENDOR_ID);
+
       if (error) {
         console.error("Failed to fetch campaigns:", error.message);
         return;
       }
-  
+
       setCampaigns(data);
     };
-  
+
     fetchCampaigns();
-  }, [vendorId]); // Rerun when vendorId becomes available
+  }, []);
 
-  // Your existing fetchPurchases() useEffect continues below...
-
+  // Fetch purchases
   useEffect(() => {
     const fetchPurchases = async () => {
       const { data, error } = await supabase
@@ -107,7 +89,6 @@ const MyCampaigns = () => {
   };
 
   const updateCampaignName = async (purchaseId, newName) => {
-    console.log("Saving campaign name:", newName, "for ID:", purchaseId);
     const { error } = await supabase
       .from("purchases")
       .update({ campaign_name: newName })
@@ -122,66 +103,57 @@ const MyCampaigns = () => {
   const handleDragEnd = async (result) => {
     const { destination, source, draggableId } = result;
     if (!destination) return;
-  
-    // If dropped in the same place, do nothing
+
     if (
       destination.droppableId === source.droppableId &&
       destination.index === source.index
     ) {
       return;
     }
-  
+
     const purchaseId = draggableId;
     const newCampaignId = destination.droppableId;
-  
-    // Update state for immediate UI feedback
+
     setPurchases((prev) =>
       prev.map((p) =>
         p.purchaseId === purchaseId ? { ...p, campaign_id: newCampaignId } : p
       )
     );
-  
-    // Persist change to Supabase
+
     const { error } = await supabase
       .from("purchases")
       .update({ campaign_id: newCampaignId })
       .eq("id", purchaseId);
-  
+
     if (error) {
       console.error("Failed to update campaign_id:", error.message);
       alert("Error saving campaign update.");
     }
   };
-  
-// Include a virtual "Unassigned" campaign bucket for any purchases without a campaign_id
-  const allCampaignsWithUnassigned = [
-    { id: "unassigned", name: "Unassigned" },
-    ...campaigns,
-  ];
 
   const handleAddCampaign = async () => {
-    if (!vendorId) {
-      alert("User not authenticated yet. Please wait a moment and try again.");
-      return;
-    }
-  
     const name = prompt("Enter a name for your new campaign:");
     if (!name) return;
-  
+
     const { data, error } = await supabase
       .from("campaigns")
-      .insert([{ name, vendor_id: vendorId }])
-      .select(); // get the inserted row back
-  
+      .insert([{ name, vendor_id: TEST_VENDOR_ID }])
+      .select();
+
     if (error) {
       console.error("Failed to add campaign:", error.message);
       alert("Error adding campaign.");
       return;
     }
-  
+
     setCampaigns((prev) => [...prev, ...data]);
   };
-  
+
+  const allCampaignsWithUnassigned = [
+    { id: "unassigned", name: "Unassigned" },
+    ...campaigns,
+  ];
+
   return (
     <>
       <div className="p-4">
@@ -192,7 +164,7 @@ const MyCampaigns = () => {
           + New Campaign
         </button>
       </div>
-  
+
       <DragDropContext onDragEnd={handleDragEnd}>
         <div className="flex gap-6 p-4">
           {allCampaignsWithUnassigned.map((campaign) => (
@@ -204,7 +176,7 @@ const MyCampaigns = () => {
                   className="w-1/3 bg-gray-100 p-4 rounded shadow"
                 >
                   <h3 className="text-lg font-semibold mb-2">{campaign.name}</h3>
-  
+
                   {purchases
                     .filter((item) => item.campaign_id === campaign.id)
                     .map((item, index) => (
@@ -226,7 +198,7 @@ const MyCampaigns = () => {
                         )}
                       </Draggable>
                     ))}
-  
+
                   {provided.placeholder}
                 </div>
               )}
@@ -236,6 +208,6 @@ const MyCampaigns = () => {
       </DragDropContext>
     </>
   );
-  };
+};
 
 export default MyCampaigns;
