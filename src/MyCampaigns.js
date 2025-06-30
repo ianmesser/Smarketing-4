@@ -9,12 +9,52 @@ const supabase = createClient(
 
 const MyCampaigns = () => {
   const [purchases, setPurchases] = useState([]);
+  const [campaigns, setCampaigns] = useState([]);
+  const [vendorId, setVendorId] = useState(null); // 👈 NEW STATE
+  
+  // 👇 NEW useEffect block to fetch current vendor
+  useEffect(() => {
+    const fetchUser = async () => {
+      const { data, error } = await supabase.auth.getUser();
+  
+      if (error) {
+        console.error("Failed to get user:", error.message);
+        return;
+      }
+  
+      if (data?.user?.id) {
+        setVendorId(data.user.id);
+      }
+    };
+  
+    fetchUser();
+  }, []);
+  
+  useEffect(() => {
+    if (!vendorId) return; // Wait until vendorId is available
+  
+    const fetchCampaigns = async () => {
+      const { data, error } = await supabase
+        .from("campaigns")
+        .select("*")
+        .eq("vendor_id", vendorId); // Filter by vendor_id
+  
+      if (error) {
+        console.error("Failed to fetch campaigns:", error.message);
+        return;
+      }
+  
+      setCampaigns(data);
+    };
+  
+    fetchCampaigns();
+  }, [vendorId]); // Rerun when vendorId becomes available
 
-  const [campaigns, setCampaigns] = useState([
-    { id: "campaign-1", name: "Holiday 2025" },
-    { id: "campaign-2", name: "Back to School" },
-    { id: "campaign-3", name: "Summer Sale" }
-  ]);
+  // Your existing fetchPurchases() useEffect continues below...
+  useEffect(() => {
+    const fetchPurchases = async () => {
+      // ...
+    };
 
   useEffect(() => {
     const fetchPurchases = async () => {
@@ -129,7 +169,7 @@ const MyCampaigns = () => {
   
     const { data, error } = await supabase
       .from("campaigns")
-      .insert([{ name }])
+      .insert([{ name, vendor_id: vendorId }])
       .select(); // get the inserted row back
   
     if (error) {
