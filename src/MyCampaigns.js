@@ -157,7 +157,7 @@ const MyCampaigns = () => {
     const { data, error } = await supabase
       .from("campaigns")
       .update({ name: newName }) // ✅ this targets the "name" field
-      .eq("id", campaignId) // ✅ this uses the "id" field as your where clause
+      .eq("id", campaignId.toString()) // 🛠️ Force as string
       .select(); // optional: lets us log what was updated
   
     if (error) {
