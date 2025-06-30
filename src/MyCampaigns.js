@@ -149,6 +149,23 @@ const MyCampaigns = () => {
     setCampaigns((prev) => [...prev, ...data]);
   };
 
+  const handleRenameCampaign = async (campaignId, currentName) => {
+    const newName = prompt('Enter a new name for this campaign:', currentName);
+    if (!newName || newName === currentName) return;
+  
+    const { error } = await supabase
+      .from('campaigns')
+      .update({ name: newName })
+      .eq('id', campaignId);
+  
+    if (error) {
+      console.error('Error renaming campaign:', error);
+    } else {
+      // Refetch campaigns
+      fetchCampaigns();
+    }
+  };
+
   const allCampaignsWithUnassigned = [
     { id: "unassigned", name: "Unassigned" },
     ...campaigns,
@@ -175,7 +192,15 @@ const MyCampaigns = () => {
                   {...provided.droppableProps}
                   className="w-1/3 bg-gray-100 p-4 rounded shadow"
                 >
-                  <h3 className="text-lg font-semibold mb-2">{campaign.name}</h3>
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-lg font-semibold">{campaign.name}</h2>
+                    <button
+                      className="ml-2 text-sm text-blue-500 hover:underline"
+                      onClick={() => handleRenameCampaign(campaign.id, campaign.name)}
+                    >
+                      ✏️
+                    </button>
+                  </div>
 
                   {purchases
                     .filter((item) => item.campaign_id === campaign.id)
