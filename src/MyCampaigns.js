@@ -157,7 +157,7 @@ const MyCampaigns = () => {
     const { data, error } = await supabase
       .from("campaigns")
       .update({ name: newName }) // ✅ this targets the "name" field
-      .eq("id", campaignId.toString()) // 🛠️ Force as string
+      .eq("id", "27cbea98-3917-4335-bf2d-3999193c3f03")
       .select(); // optional: lets us log what was updated
   
     if (error) {
