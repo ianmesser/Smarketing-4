@@ -18,15 +18,16 @@ const MyCampaigns = () => {
     if (!dateStr) return "";
   
     const date = new Date(dateStr);
+  
+    // Extract UTC year, month, day directly to avoid timezone shifts
     const year = date.getUTCFullYear();
-    const month = date.getUTCMonth();
+    const monthIndex = date.getUTCMonth(); // 0-based index
     const day = date.getUTCDate();
   
-    return new Date(Date.UTC(year, month, day)).toLocaleDateString(undefined, {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
+    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", 
+                        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  
+    return `${monthNames[monthIndex]} ${day < 10 ? "0" + day : day}, ${year}`;
   };
 
   const fetchCampaigns = async () => {
