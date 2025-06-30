@@ -278,7 +278,9 @@ const MyCampaigns = () => {
                             className="bg-white p-3 mb-3 border border-gray-300 rounded"
                           >
                             <h4 className="font-bold">{item.location}</h4>
-                            <p>{item.channel} | {item.format}</p>
+                            <p>{item.channel} | {item.format}
+                               {item.dimensions && ` | ${item.dimensions}`  
+                            </p>
                             <p className="text-sm text-gray-500">
                               {formatDate(item.start_date)} → {formatDate(item.end_date)}
                             </p>
