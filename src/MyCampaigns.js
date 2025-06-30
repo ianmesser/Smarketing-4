@@ -14,6 +14,13 @@ const MyCampaigns = () => {
   const [purchases, setPurchases] = useState([]);
   const [campaigns, setCampaigns] = useState([]);
   
+  const formatDate = (dateStr) =>
+    new Date(dateStr).toLocaleDateString(undefined, {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+
   const fetchCampaigns = async () => {
     const { data, error } = await supabase
       .from('campaigns')
