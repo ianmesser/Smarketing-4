@@ -69,7 +69,6 @@ const MyCampaigns = () => {
               price,
               dimensions,
               style_guide_url,
-              retailer_id,
               retailers (
                 name
               )
@@ -89,6 +88,7 @@ const MyCampaigns = () => {
         campaign_id: row.campaign_id || "unassigned",
         start_date: row.availability?.start_date,
         end_date: row.availability?.end_date,
+        retailer_name: row.availability?.placements?.retailers?.name,
         ...row.availability?.placements
       }));
 
@@ -285,7 +285,7 @@ const MyCampaigns = () => {
                             <p>
                               {item.channel} | {item.format}
                               {item.dimensions && ` | ${item.dimensions}`}
-                              {item.retailer && ` | ${item.retailer}`}
+                              {item.retailer_name && ` | ${item.retailer_name}`}
                             </p>
                             <p className="text-sm text-gray-500">
                               {formatDate(item.start_date)} → {formatDate(item.end_date)}
