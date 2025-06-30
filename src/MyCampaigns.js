@@ -68,7 +68,11 @@ const MyCampaigns = () => {
               format,
               price,
               dimensions,
-              style_guide_url
+              style_guide_url,
+              retailer_id,
+              retailers (
+                name
+              )
             )
           )
         `);
@@ -281,6 +285,7 @@ const MyCampaigns = () => {
                             <p>
                               {item.channel} | {item.format}
                               {item.dimensions && ` | ${item.dimensions}`}
+                              {item.retailer && ` | ${item.retailer}`}
                             </p>
                             <p className="text-sm text-gray-500">
                               {formatDate(item.start_date)} → {formatDate(item.end_date)}
