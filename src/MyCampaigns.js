@@ -29,20 +29,6 @@ const MyCampaigns = () => {
 
   // Fetch campaigns belonging to this vendor
   useEffect(() => {
-    const fetchCampaigns = async () => {
-      const { data, error } = await supabase
-        .from("campaigns")
-        .select("*")
-        .eq("vendor_id", TEST_VENDOR_ID);
-
-      if (error) {
-        console.error("Failed to fetch campaigns:", error.message);
-        return;
-      }
-
-      setCampaigns(data);
-    };
-
     fetchCampaigns();
   }, []);
 
