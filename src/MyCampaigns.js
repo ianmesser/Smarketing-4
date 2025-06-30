@@ -150,24 +150,21 @@ const MyCampaigns = () => {
 
   const handleRenameCampaign = async (campaignId, currentName) => {
     const newName = prompt("Enter a new name for this campaign:", currentName);
-    if (!newName || newName === currentName) {
-      console.log("No new name provided or same as current");
-      return;
-    }
+    if (!newName || newName === currentName) return;
   
     console.log("Renaming campaign ID:", campaignId, "to:", newName);
   
     const { data, error } = await supabase
       .from("campaigns")
-      .update({ name: newName })
-      .eq("id", campaignId)
-      .select(); // helps confirm what rows updated
+      .update({ name: newName }) // ✅ this targets the "name" field
+      .eq("id", campaignId) // ✅ this uses the "id" field as your where clause
+      .select(); // optional: lets us log what was updated
   
     if (error) {
       console.error("Error renaming campaign:", error);
     } else {
       console.log("Rename success:", data);
-      fetchCampaigns();
+      fetchCampaigns(); // ✅ reloads data into UI
     }
   };
 
