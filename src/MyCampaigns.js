@@ -160,6 +160,11 @@ const MyCampaigns = () => {
   ];
 
   const handleAddCampaign = async () => {
+    if (!vendorId) {
+      alert("User not authenticated yet. Please wait a moment and try again.");
+      return;
+    }
+  
     const name = prompt("Enter a name for your new campaign:");
     if (!name) return;
   
@@ -174,7 +179,6 @@ const MyCampaigns = () => {
       return;
     }
   
-    // Add the new campaign to the UI
     setCampaigns((prev) => [...prev, ...data]);
   };
   
