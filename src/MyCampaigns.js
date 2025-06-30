@@ -14,12 +14,20 @@ const MyCampaigns = () => {
   const [purchases, setPurchases] = useState([]);
   const [campaigns, setCampaigns] = useState([]);
   
-  const formatDate = (dateStr) =>
-    new Date(dateStr).toLocaleDateString(undefined, {
+  const formatDate = (dateStr) => {
+    if (!dateStr) return "";
+  
+    const date = new Date(dateStr);
+    const year = date.getUTCFullYear();
+    const month = date.getUTCMonth();
+    const day = date.getUTCDate();
+  
+    return new Date(Date.UTC(year, month, day)).toLocaleDateString(undefined, {
       month: "short",
       day: "numeric",
       year: "numeric",
     });
+  };
 
   const fetchCampaigns = async () => {
     const { data, error } = await supabase
