@@ -285,6 +285,18 @@ const MyCampaigns = () => {
                             <p className="text-sm text-gray-500">
                               {formatDate(item.start_date)} → {formatDate(item.end_date)}
                             </p>
+
+                            {item.style_guide_url && (
+                              <a
+                                href={item.style_guide_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-block mt-2 text-sm text-blue-600 hover:underline"
+                              >
+                                📄 View Style Guide
+                              </a>
+                            )}  
+
                           </div>
                         )}
                       </Draggable>
