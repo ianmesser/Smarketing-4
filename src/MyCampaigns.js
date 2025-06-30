@@ -143,7 +143,18 @@ const MyCampaigns = () => {
   };
   
   return (
-    <DragDropContext onDragEnd={handleDragEnd}>
+    <>
+      <div className="p-4">
+        <button
+          onClick={handleAddCampaign}
+          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+        >
+          + New Campaign
+        </button>
+      </div>
+  
+      <DragDropContext onDragEnd={handleDragEnd}>
+
       <div className="flex gap-6 p-4">
         {allCampaignsWithUnassigned.map((campaign) => (
           <Droppable droppableId={campaign.id} key={campaign.id}>
