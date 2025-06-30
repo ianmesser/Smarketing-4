@@ -196,5 +196,6 @@ const MyCampaigns = () => {
       </DragDropContext>
     </>
   );
+  };
 
 export default MyCampaigns;
