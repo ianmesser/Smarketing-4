@@ -13,6 +13,19 @@ const TEST_VENDOR_ID = "00000000-0000-4000-8000-000000000000";
 const MyCampaigns = () => {
   const [purchases, setPurchases] = useState([]);
   const [campaigns, setCampaigns] = useState([]);
+  
+  const fetchCampaigns = async () => {
+    const { data, error } = await supabase
+      .from('campaigns')
+      .select('*')
+      .eq('vendor_id', staticVendorId); // make sure you already have staticVendorId defined
+  
+    if (error) {
+      console.error('Error fetching campaigns:', error);
+    } else {
+      setCampaigns(data);
+    }
+  };
 
   // Fetch campaigns belonging to this vendor
   useEffect(() => {
