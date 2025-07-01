@@ -316,6 +316,47 @@ const MyCampaigns = () => {
           ))}
         </div>
       </DragDropContext>
+      
+      <div className="px-4 mt-8">
+        <h2 className="text-xl font-semibold mb-4">📅 Timeline View (All Purchased Placements)</h2>
+        <div className="overflow-x-auto border rounded p-4 bg-white shadow">
+          {purchases.length === 0 ? (
+            <div className="text-gray-500 italic">No placements yet.</div>
+          ) : (
+            <div className="min-w-[1000px]">
+              {Array.from(new Set(purchases.map((p) => p.campaign_name || "Unassigned"))).map((campaign) => (
+                <div key={campaign} className="mb-6">
+                  <h3 className="font-bold text-gray-800 mb-2">{campaign}</h3>
+                  <div className="relative h-10 bg-gray-100 rounded overflow-hidden">
+                    {purchases
+                      .filter((item) => (item.campaign_name || "Unassigned") === campaign)
+                      .map((item) => {
+                        const start = new Date(item.start_date);
+                        const end = new Date(item.end_date);
+                        const baseDate = new Date("2025-06-01");
+                        const offset = (start - baseDate) / (1000 * 60 * 60 * 24) * 20;
+                        const width = (end - start) / (1000 * 60 * 60 * 24) * 20;
+      
+                        return (
+                          <div
+                            key={item.purchaseId}
+                            className="absolute top-1 left-0 bg-blue-500 text-white text-xs px-2 py-1 rounded shadow"
+                            style={{
+                              transform: `translateX(${offset}px)`,
+                              width: `${width}px`,
+                            }}
+                          >
+                            {item.location}
+                          </div>
+                        );
+                      })}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
     </>
   );
 };
