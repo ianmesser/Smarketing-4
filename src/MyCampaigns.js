@@ -251,13 +251,15 @@ const MyCampaigns = () => {
                   className="w-1/3 bg-gray-100 p-4 rounded shadow"
                 >
                   <div className="flex items-center justify-between">
-                    <h2 className="text-lg font-semibold">{campaign.name}</h2>
-                    <button
-                      className="ml-2 text-sm text-blue-500 hover:underline"
-                      onClick={() => handleRenameCampaign(campaign.id, campaign.name)}
-                    >
-                      ✏️
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <h2 className="text-lg font-semibold">{campaign.name}</h2>
+                      <button
+                        className="text-sm text-blue-500 hover:underline"
+                        onClick={() => handleRenameCampaign(campaign.id, campaign.name)}
+                      >
+                        ✏️
+                      </button>
+                    </div>
                     <button
                       className="text-sm text-red-500 hover:underline"
                       onClick={() => handleDeleteCampaign(campaign.id)}
