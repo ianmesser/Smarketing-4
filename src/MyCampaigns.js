@@ -317,44 +317,55 @@ const MyCampaigns = () => {
         </div>
       </DragDropContext>
       
-      <div className="px-4 mt-8">
-        <h2 className="text-xl font-semibold mb-4">📅 Timeline View (All Purchased Placements)</h2>
-        <div className="overflow-x-auto border rounded p-4 bg-white shadow">
-          {purchases.length === 0 ? (
-            <div className="text-gray-500 italic">No placements yet.</div>
-          ) : (
-            <div className="min-w-[1000px]">
-              {Array.from(new Set(purchases.map((p) => p.campaign_name || "Unassigned"))).map((campaign) => (
-                <div key={campaign} className="mb-6">
-                  <h3 className="font-bold text-gray-800 mb-2">{campaign}</h3>
-                  <div className="relative h-10 bg-gray-100 rounded overflow-hidden">
-                    {purchases
-                      .filter((item) => (item.campaign_name || "Unassigned") === campaign)
-                      .map((item) => {
-                        const start = new Date(item.start_date);
-                        const end = new Date(item.end_date);
-                        const baseDate = new Date("2025-06-01");
-                        const offset = (start - baseDate) / (1000 * 60 * 60 * 24) * 20;
-                        const width = (end - start) / (1000 * 60 * 60 * 24) * 20;
+      {/* Timeline View (All Purchased Placements) */}
+      <div className="mt-12">
+        <h2 className="text-2xl font-semibold mb-4 flex items-center gap-2">
+          <span>📅</span> Timeline View (All Purchased Placements)
+        </h2>
       
-                        return (
-                          <div
-                            key={item.purchaseId}
-                            className="absolute top-1 left-0 bg-blue-500 text-white text-xs px-2 py-1 rounded shadow"
-                            style={{
-                              transform: `translateX(${offset}px)`,
-                              width: `${width}px`,
-                            }}
-                          >
-                            {item.location}
-                          </div>
-                        );
-                      })}
-                  </div>
+        {/* Horizontal time axis */}
+        <div className="overflow-x-auto border-b border-gray-300 pb-2 mb-4">
+          <div className="flex w-[1800px] text-sm text-gray-500">
+            {[...Array(30)].map((_, i) => {
+              const date = new Date();
+              date.setDate(date.getDate() + i);
+              return (
+                <div
+                  key={i}
+                  className="w-[60px] text-center"
+                >
+                  {date.toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                 </div>
-              ))}
-            </div>
-          )}
+              );
+            })}
+          </div>
+        </div>
+      
+        {/* Placement row */}
+        <div className="bg-white rounded-lg p-4 shadow">
+          <h3 className="text-lg font-bold mb-2">Unassigned</h3>
+          <div className="relative h-12 w-[1800px] bg-gray-100 rounded">
+            {purchases.map((item) => {
+              const start = new Date(item.start_date);
+              const end = new Date(item.end_date);
+              const today = new Date();
+              const daysFromToday = Math.max(0, Math.floor((start - today) / (1000 * 60 * 60 * 24)));
+              const durationDays = Math.max(1, Math.floor((end - start) / (1000 * 60 * 60 * 24)) + 1);
+      
+              return (
+                <div
+                  key={item.purchaseId}
+                  className="absolute top-2 h-8 bg-blue-500 text-white text-xs px-2 rounded shadow"
+                  style={{
+                    left: `${daysFromToday * 60}px`,
+                    width: `${durationDays * 60}px`,
+                  }}
+                >
+                  {item.location}
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
     </>
