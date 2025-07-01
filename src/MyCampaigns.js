@@ -343,7 +343,6 @@ const MyCampaigns = () => {
       
         {/* Placement row */}
         <div className="bg-white rounded-lg p-4 shadow">
-          <h3 className="text-lg font-bold mb-2">Unassigned</h3>
           <div className="relative h-12 w-[1800px] bg-gray-100 rounded">
             {purchases.map((item) => {
               const start = new Date(item.start_date);
@@ -361,7 +360,7 @@ const MyCampaigns = () => {
                     width: `${durationDays * 60}px`,
                   }}
                 >
-                  {item.location}
+                  {item.location} – {item.retailer?.name || 'Unknown'} – {item.campaign_name || 'Unassigned'}
                 </div>
               );
             })}
